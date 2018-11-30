@@ -1,0 +1,19 @@
+{
+	"extends": "airbnb-base",
+	"rules": {
+		"max-len": ["error", { "code": 200 }],
+		"no-underscore-dangle": ["error", { "allow": ["_id"] }],
+		"indent": ["error", "tab"],
+		"no-tabs": "off",
+		"comma-dangle": ["error", "always-multiline",
+			{
+				"functions": "never"
+			}
+		],
+		"no-plusplus": ["error",
+			{
+				"allowForLoopAfterthoughts": true
+			}
+		]
+	}
+}
