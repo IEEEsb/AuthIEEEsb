@@ -6,7 +6,7 @@ const User = require('../models/User');
 // eslint-disable-next-line import/no-unresolved
 const { pwdIterations } = require('../config.json');
 const {
-	AuthenticationRequiredError, CredentialsError,
+	AuthenticationRequiredError, CredentialsError, InvalidSessionError,
 } = require('../common/errors');
 
 
@@ -71,6 +71,14 @@ module.exports.login = (req, res, next) => {
 	}).catch(e => next(e));
 };
 
+module.exports.getUser = (req, res, next) => (
+	User.findOne({ _id: req.session.userId }, '-_id name alias services.scope services.id').then((user) => {
+		if (user === null) throw new AuthenticationRequiredError();
+
+		return res.json(user);
+	}).catch(e => next(e))
+);
+
 module.exports.logout = (req, res) => (
 	req.session.destroy((e) => {
 		if (e) throw e;
@@ -83,3 +91,12 @@ module.exports.authRequired = (req, res, next) => {
 
 	return next();
 };
+
+module.exports.adminRequired = (req, res, next) => (
+	User.findById(req.session.userId).then((user) => {
+		if (user === null) throw new InvalidSessionError();
+		// if (!user.roles.includes(adminRole)) throw new AdminRequiredError();
+
+		return next();
+	}).catch(e => next(e))
+);

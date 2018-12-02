@@ -20,7 +20,7 @@ module.exports.validators = {
 			email: Joi.string().email().required(),
 			name: Joi.string().required(),
 			password: Joi.string().required(),
-			ieee: Joi.string().required(),
+			ieee: Joi.number().required(),
 		},
 	},
 	login: {
