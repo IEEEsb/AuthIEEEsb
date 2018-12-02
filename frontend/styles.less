@@ -1,0 +1,95 @@
+/* You can add global styles to this file, and also import other style files */
+@import './variables.less';
+
+html, body {
+	height: 100%;
+}
+
+body {
+	background-color: @bg-color !important;
+	font-family: Lato !important;
+}
+
+.link {
+	cursor: pointer;
+	text-decoration: none;
+	user-drag: none;
+	-webkit-user-drag: none;
+	border-radius: 3px;
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+.error {
+	color: @err-color;
+}
+
+.input-container {
+	padding: 0px !important;
+
+	.input-text {
+		padding: 0px 5px;
+		padding-bottom: 8px;
+		padding-top: 15px;
+		width: 100%;
+		border: none;
+		& + span{
+			position: absolute;
+			background: #ddd;
+			left: 0px;
+			bottom: 0px;
+			height: 2px;
+			width: 100%;
+
+			&::after {
+				content: "";
+				background: @ieee-color;
+				position: absolute;
+				left: 0px;
+				bottom: 0px;
+				height: 2px;
+				width: 0%;
+				transition: all 0.4s;
+			}
+		}
+
+		&:focus {
+			& + span:after {
+				content: "";
+				background: @ieee-color;
+				position: absolute;
+				left: 0px;
+				bottom: 0px;
+				height: 2px;
+				width: 100%;
+				transition: all 0.4s;
+			}
+			outline-color: white;
+		}
+	}
+
+	.input-button {
+		margin-top: 40px;
+		margin-left: auto;
+		margin-right: auto;
+		//width: 70%;
+		background-color: @ieee-color;
+		border-radius: 20px;
+		text-align: center;
+		color: white;
+		font-size: 20px;
+		cursor: pointer;
+		transition: all 0.4s;
+
+		&:hover {
+			background-color: darken(@ieee-color, 10%);
+			transition: all 0.4s;
+		}
+
+		& p {
+			margin: 0px;
+			padding: 5px 0px;
+		}
+	}
+}

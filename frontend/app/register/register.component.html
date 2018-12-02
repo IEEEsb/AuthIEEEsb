@@ -1,0 +1,47 @@
+<div class="row h-100 justify-content-center">
+	<div class="col-3 align-self-center main px-5 pt-5">
+		<div class="row mb-4 justify-content-center">
+			<div class="col-7">
+				<img src="assets/logo_entero.svg" class="rounded mx-auto w-100" alt="...">
+			</div>
+		</div>
+		<p class="h5 text-center mb-5">Registro</p>
+		<div class="row">
+			<div class="col input-container">
+				<input type="text" class="input-text" [(ngModel)]="alias" placeholder="Alias">
+				<span></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col input-container">
+				<input type="email" class="input-text" [(ngModel)]="email" placeholder="E-mail">
+				<span></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col input-container">
+				<input type="text" class="input-text" [(ngModel)]="name" placeholder="Nombre y apellidos">
+				<span></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col input-container">
+				<input type="text" class="input-text" [(ngModel)]="ieee" placeholder="Nº IEEE">
+				<span></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col input-container">
+				<input type="password" class="input-text" [(ngModel)]="password" placeholder="Contraseña">
+				<span></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col input-container">
+				<div class="input-button" (click)="register()"><p>Registro</p></div>
+			</div>
+		</div>
+		<p class="error my-3" *ngIf="error">{{error}}</p>
+		<p class="h6 my-5">Si ya tienes una cuenta, <a class="link" routerLink="/login">Inicia Sesión!</a></p>
+	</div>
+</div>
