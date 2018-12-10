@@ -6,7 +6,7 @@ const User = require('../models/User');
 // eslint-disable-next-line import/no-unresolved
 const { pwdIterations } = require('../config.json');
 const {
-	AuthenticationRequiredError, CredentialsError, InvalidSessionError,
+	AuthenticationRequiredError, CredentialsError, InvalidSessionError, InvalidPermissionsError, WrongPropertiesError, UnknownObjectError,
 } = require('../common/errors');
 
 
@@ -66,16 +66,45 @@ module.exports.login = (req, res, next) => {
 		return res.status(200).json({
 			name: user.name,
 			alias: user.alias,
+			email: user.email,
+			ieee: user.ieee,
 			services: user.services,
 		});
 	}).catch(e => next(e));
 };
 
-module.exports.getUser = (req, res, next) => (
-	User.findOne({ _id: req.session.userId }, '-_id name alias services.scope services.id').then((user) => {
+module.exports.updateUser = (req, res, next) => (
+	User.findOneAndUpdate({ _id: req.session.userId }, { $set: req.body }, { new: true }).then((user) => {
+		// Check if any User were updated after the operation
+		if (!user) throw new UnknownObjectError('User');
+
+		// The backend doesn't complain if the User existed but it
+		// didn't suffer any modifications at all, it just accepts the
+		// request and leaves the object unmutated
+
+		return res.status(200).json({
+			name: user.name,
+			alias: user.alias,
+			email: user.email,
+			ieee: user.ieee,
+			services: user.services,
+		});
+	}).catch(e => next(e))
+);
+
+module.exports.getSelfUser = (req, res, next) => (
+	User.findOne({ _id: req.session.userId }, '-_id name alias email ieee services.scope services.id').then((user) => {
 		if (user === null) throw new AuthenticationRequiredError();
 
-		return res.json(user);
+		return res.status(200).json(user);
+	}).catch(e => next(e))
+);
+
+module.exports.getUser = (req, res, next) => (
+	User.findOne({ _id: req.userId }, `-_id ${req.scope.join(' ')}`).then((user) => {
+		if (!user) throw new InvalidPermissionsError();
+
+		return res.status(200).json(user);
 	}).catch(e => next(e))
 );
 

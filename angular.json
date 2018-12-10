@@ -13,6 +13,9 @@
 					"inlineStyle": false,
 					"styleext": "less",
 					"spec": false,
+				},
+				"@schematics/angular:service": {
+					"spec": false,
 				}
 			},
 			"architect": {

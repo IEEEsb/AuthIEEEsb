@@ -6,7 +6,13 @@ html, body {
 }
 
 body {
-	background-color: @bg-color !important;
+	//background-color: @bg-color !important;
+	background-color: white;
+	background-image: linear-gradient(-45deg, lighten(@ieee-color, 10%), @ieee-color);
+	background-repeat: no-repeat;
+	background-size: 100% auto;
+	background-position: center top;
+	background-attachment: fixed;
 	font-family: Lato !important;
 }
 
@@ -15,7 +21,6 @@ body {
 	text-decoration: none;
 	user-drag: none;
 	-webkit-user-drag: none;
-	border-radius: 3px;
 	&:hover {
 		text-decoration: none;
 	}
@@ -31,12 +36,13 @@ body {
 	.input-text {
 		padding: 0px 5px;
 		padding-bottom: 8px;
-		padding-top: 15px;
+		padding-top: 8px;
 		width: 100%;
 		border: none;
 		& + span{
 			position: absolute;
-			background: #ddd;
+			background: #E88A0C;
+			//background: lighten(@ieee-color, 20%);
 			left: 0px;
 			bottom: 0px;
 			height: 2px;
@@ -52,6 +58,10 @@ body {
 				width: 0%;
 				transition: all 0.4s;
 			}
+		}
+
+		&:-webkit-autofill {
+			-webkit-box-shadow: 0 0 0 30px white inset;
 		}
 
 		&:focus {
@@ -70,26 +80,182 @@ body {
 	}
 
 	.input-button {
-		margin-top: 40px;
+		//margin-top: 40px;
 		margin-left: auto;
 		margin-right: auto;
 		//width: 70%;
 		background-color: @ieee-color;
-		border-radius: 20px;
 		text-align: center;
 		color: white;
 		font-size: 20px;
 		cursor: pointer;
-		transition: all 0.4s;
+		transition: all 0.2s;
+		border-radius: .25rem!important;
+
+		&:extend(.rounded all);
+		&:extend(.shadow-1 all);
 
 		&:hover {
 			background-color: darken(@ieee-color, 10%);
-			transition: all 0.4s;
+			transition: all 0.2s;
 		}
 
 		& p {
 			margin: 0px;
 			padding: 5px 0px;
+		}
+	}
+}
+
+.pill-container {
+	padding: 0px 5px !important;
+
+	& .pill {
+		height: 30px;
+		margin: 1px 0px;
+		background-color: @ieee-color;
+		color: white;
+
+		&:extend(.rounded all);
+		&:extend(.shadow-1 all);
+
+		& a {
+			color: darken(@bg-color, 10%) !important;
+		}
+
+		&:hover a {
+			color: darken(@bg-color, 30%) !important;
+		}
+	}
+}
+
+.rounded {
+	border-radius: .25rem!important;
+}
+
+.text {
+	padding: 4px 0px;
+	text-align: center;
+}
+
+.shadow-center-2 {
+	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.shadow-center-3 {
+	box-shadow: 0 6px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.shadow-1 {
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+	//transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.shadow-1:hover {
+	//box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.shadow-2 {
+	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.shadow-3 {
+	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.shadow-4 {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.shadow-5 {
+	box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
+.z-index-0 {
+	z-index: -10;
+}
+
+.z-index-1 {
+	z-index: 0;
+}
+
+.z-index-2 {
+	z-index: 10;
+}
+
+.z-index-3 {
+	z-index: 100;
+}
+
+.z-index-4 {
+	z-index: 1000;
+}
+
+
+
+@primary: #4F2EDC;
+@primary-light: #947ADA;
+@gray: #9A9999;
+
+.toggle {
+	position: relative;
+	display: block;
+	width: 40px;
+	height: 20px;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	transform: translate3d(0,0,0);
+	&:before {
+		content: "";
+		position: relative;
+		top: 3px;
+		left: 3px;
+		width: 34px;
+		height: 14px;
+		display: block;
+		background: @gray;
+		border-radius: 8px;
+		transition: background .2s ease;
+	}
+	span {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 20px;
+		height: 20px;
+		display: block;
+		background: white;
+		border-radius: 10px;
+		box-shadow: 0 3px 8px rgba(@gray,.5);
+		transition: all .2s ease;
+		&:before {
+			content: "";
+			position: absolute;
+			display: block;
+			margin: -18px;
+			width: 56px;
+			height: 56px;
+			background: rgba(@primary,.5);
+			border-radius: 50%;
+			transform: scale(0);
+			opacity: 1;
+			pointer-events: none;
+		}
+	}
+	&.checked {
+		&:before {
+			background: lighten(@ieee-color, 10%);
+		}
+		span{
+			background: @ieee-color;
+			transform: translateX(20px);
+			transition: all .2s cubic-bezier(.8,.4,.3,1.25), background .15s ease;
+			box-shadow: 0 3px 8px rgba(@ieee-color,.2);
+			&:before {
+				transform: scale(1);
+				opacity: 0;
+				transition: all .4s ease;
+			}
 		}
 	}
 }

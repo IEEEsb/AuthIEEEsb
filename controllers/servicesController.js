@@ -5,20 +5,40 @@ const Token = require('../models/Token');
 const Service = require('../models/Service');
 // eslint-disable-next-line import/no-unresolved
 const {
-	InvalidPermissionsError, InvalidServiceError, InvalidTokenError, InvalidCodeError,
+	InvalidPermissionsError, InvalidServiceError, InvalidTokenError, InvalidCodeError, UnknownObjectError,
 } = require('../common/errors');
 
 
 module.exports.addService = (req, res, next) => (
 	Service.create({
 		name: req.body.name,
-		scope: req.body.scope ? req.body.scope : ['name'],
+		scope: req.body.scope ? req.body.scope : [],
 		owner: req.session.userId,
 	}).then((service) => {
 		if (!service) throw new InternalError();
 
+		return res.status(200).send(service);
+	}).catch(e => next(e))
+);
+
+module.exports.updateService = (req, res, next) => (
+	Service.findOneAndUpdate({ _id: req.params.serviceId, owner: req.session.userId }, { $set: req.body }, { new: true }).then((service) => {
+		if (!service) throw new UnknownObjectError('Service');
+
 		return res.sendStatus(204);
 	}).catch(e => next(e))
+);
+
+module.exports.removeService = (req, res, next) => (
+	Service.deleteOne({ _id: req.params.serviceId, owner: req.session.userId }).then((result) => {
+		if (result.nModified === 0) throw new UnknownObjectError('Service');
+
+		return User.updateMany({ 'services.id': req.params.serviceId }, { $pull: { services: { 'services.id': req.params.serviceId } } });
+	}).then(() => (
+		Token.deleteMany({ service: req.params.serviceId })
+	)).then(() => (
+		res.sendStatus(204)
+	)).catch(e => next(e))
 );
 
 module.exports.grantPermission = (req, res, next) => {
@@ -68,6 +88,31 @@ module.exports.grantPermission = (req, res, next) => {
 	)).catch(e => next(e));
 };
 
+module.exports.getSelfServices = (req, res, next) => (
+	Service.find({ owner: req.session.userId }, '_id name scope secret').then((services) => {
+		if (!services) throw new InvalidPermissionsError();
+
+		return res.status(200).json(services);
+	}).catch(e => next(e))
+);
+
+module.exports.getSelfService = (req, res, next) => (
+	Service.findOne({ _id: req.params.serviceId, owner: req.session.userId }, '_id name scope secret').then((service) => {
+		if (!service) throw new InvalidPermissionsError();
+
+		return res.status(200).json(service);
+	}).catch(e => next(e))
+);
+
+module.exports.getService = (req, res, next) => (
+	Service.findOne({ _id: req.params.serviceId }, '_id name scope').then((service) => {
+		if (!service) throw new InvalidPermissionsError();
+
+		return res.status(200).json(service);
+	}).catch(e => next(e))
+);
+
+
 module.exports.requestToken = (req, res, next) => {
 	let token;
 	return Service.findOne({ _id: req.body.service, secret: req.body.secret }).then((service) => {
@@ -83,14 +128,6 @@ module.exports.requestToken = (req, res, next) => {
 		res.status(200).json({ token: token.token })
 	)).catch(e => next(e));
 };
-
-module.exports.getUser = (req, res, next) => (
-	User.findOne({ _id: req.userId }, `-_id ${req.scope.join(' ')}`).then((user) => {
-		if (!user) throw new InvalidPermissionsError();
-
-		return res.status(200).json(user);
-	}).catch(e => next(e))
-);
 
 module.exports.tokenRequired = (req, res, next) => (
 	Token.findOne({ token: req.query.token }).then((token) => {

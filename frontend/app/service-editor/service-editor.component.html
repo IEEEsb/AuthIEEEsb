@@ -1,0 +1,69 @@
+<div class="row justify-content-center">
+	<div class="col-6 bg-white shadow-2 rounded py-5">
+		<p class="h5 text-center mb-3" *ngIf="!editing">Añadir Servicio</p>
+		<p class="h5 text-center mb-3" *ngIf="editing">Editar Servicio</p>
+
+		<div class="row mb-3">
+			<div class="col-3">
+				<p class="h5 text-center text">Nombre:</p>
+			</div>
+			<div class="col-5 input-container">
+				<input type="text" class="input-text" [(ngModel)]="service.name" placeholder="Nombre">
+				<span></span>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-3">
+				<p class="h5 text-center text">Scope:</p>
+			</div>
+			<div class="col-5" *ngIf="service.scope && service.scope.length > 0">
+				<div class="row">
+					<div class="col-3 pill-container" *ngFor="let scope of service.scope; index as i">
+						<div class="pill link text-center" (click)="removeScope(scope)">
+							{{scope}}<a class="ml-1">x</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-5 px-0" *ngIf="!service.scope || service.scope.length <= 0">
+				<p class="h6 text-left text">No has añadido ningún scope</p>
+			</div>
+			<div class="col-4 input-container">
+				<div ngbDropdown class="d-inline-block">
+					<button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Seleccionar scope</button>
+					<div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+						<button class="dropdown-item" (click)="addScope('alias')">Alias</button>
+						<button class="dropdown-item" (click)="addScope('email')">E-mail</button>
+						<button class="dropdown-item" (click)="addScope('name')">Nombre</button>
+						<button class="dropdown-item" (click)="addScope('ieee')">Nº IEEE</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mb-3" *ngIf="editing">
+			<div class="col-3">
+				<p class="h5 text-center text">Secreto:</p>
+			</div>
+			<div class="col-8 px-0">
+				<p class="h5 text-left text">{{service.secret}}</p>
+			</div>
+		</div>
+		<div class="row justify-content-center" *ngIf="!editing">
+			<div class="col-4 input-container">
+				<div class="input-button" (click)="addService()"><p>Añadir</p></div>
+			</div>
+		</div>
+		<div class="row justify-content-center" *ngIf="editing">
+			<div class="col-4 input-container">
+				<div class="input-button" (click)="updateService()"><p>Actualizar</p></div>
+			</div>
+			<div class="col-1">
+
+			</div>
+			<div class="col-4 input-container">
+				<div class="input-button bg-danger" (click)="removeService()"><p>Eliminar</p></div>
+			</div>
+		</div>
+		<p class="error my-3" *ngIf="error">{{error}}</p>
+	</div>
+</div>

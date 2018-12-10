@@ -1,19 +1,25 @@
 <div class="row h-100 justify-content-center">
-	<div class="col-3 align-self-center main px-5 pt-5">
+	<div class="col-3 shadow-center-3  align-self-center main px-5 py-5 rounded">
 		<div class="row mb-4 justify-content-center">
-			<div class="col-7">
+			<div class="col-4">
 				<img src="assets/logo_entero.svg" class="rounded mx-auto w-100" alt="...">
 			</div>
 		</div>
-		<p class="h5 text-center mb-5">Iniciar Sesión</p>
-		<div class="row">
-			<div class="col input-container">
+		<p class="h2 text-center mb-5">Iniciar Sesión</p>
+		<div class="row align-items-center mb-3">
+			<div class="col-4 input-container">
+				<p class="text-center mb-0">Alias:</p>
+			</div>
+			<div class="col-8 input-container">
 				<input type="text" class="input-text" [(ngModel)]="alias" placeholder="Alias">
 				<span></span>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col input-container">
+		<div class="row align-items-center mb-3">
+			<div class="col-4 input-container">
+				<p class="text-center mb-0">Contraseña:</p>
+			</div>
+			<div class="col-8 input-container">
 				<input type="password" class="input-text" [(ngModel)]="password" placeholder="Contraseña">
 				<span></span>
 			</div>
@@ -24,6 +30,6 @@
 			</div>
 		</div>
 		<p class="error my-3" *ngIf="error">{{error}}</p>
-		<p class="h6 my-5">Si no tienes una cuenta, <a class="link" routerLink="/register">Regístrate!</a></p>
+		<p class="h6 mt-5">Si no tienes una cuenta, <a class="link" routerLink="/register">Regístrate!</a></p>
 	</div>
 </div>

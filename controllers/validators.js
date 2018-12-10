@@ -29,6 +29,16 @@ module.exports.validators = {
 			password: Joi.string().required(),
 		},
 	},
+	updateUser: {
+		body: {
+			alias: Joi.string(),
+			email: Joi.string().email(),
+			name: Joi.string(),
+			ieee: Joi.number(),
+			pwd: Joi.any().forbidden(),
+			services: Joi.any().forbidden(),
+		},
+	},
 	requestToken: {
 		body: {
 			service: Joi.string().required(),
@@ -40,6 +50,14 @@ module.exports.validators = {
 		body: {
 			name: Joi.string().required(),
 			scope: Joi.array(),
+		},
+	},
+	updateService: {
+		body: {
+			name: Joi.string(),
+			scope: Joi.array(),
+			secret: Joi.any().forbidden(),
+			owner: Joi.any().forbidden(),
 		},
 	},
 	grantPermission: {

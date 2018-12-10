@@ -1,0 +1,47 @@
+<div class="row justify-content-center">
+	<div class="col-6 bg-white shadow-2 py-5 rounded">
+		<p class="h5 text-center mb-5">Perfil</p>
+		<div class="row mb-3">
+			<div class="col-4">
+				<p class="h5 text-center text">Alias:</p>
+			</div>
+			<div class="col-7 input-container">
+				<input type="text" class="input-text" [(ngModel)]="user.alias" placeholder="Alias">
+				<span></span>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-4">
+				<p class="h5 text-center text">E-mail:</p>
+			</div>
+			<div class="col-7 input-container">
+				<input type="text" class="input-text" [(ngModel)]="user.email" placeholder="E-mail">
+				<span></span>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-4">
+				<p class="h5 text-center text">Nombre:</p>
+			</div>
+			<div class="col-7 input-container">
+				<input type="text" class="input-text" [(ngModel)]="user.name" placeholder="Nombre y apellidos">
+				<span></span>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-4">
+				<p class="h5 text-center text">Nº IEEE:</p>
+			</div>
+			<div class="col-7 input-container">
+				<input type="text" class="input-text" [(ngModel)]="user.ieee" placeholder="Nº IEEE">
+				<span></span>
+			</div>
+		</div>
+		<div class="row justify-content-center">
+			<div class="col-4 input-container">
+				<div class="input-button" (click)="updateUser()"><p>Actualizar</p></div>
+			</div>
+		</div>
+		<p class="error my-3" *ngIf="error">{{error}}</p>
+	</div>
+</div>

@@ -5,87 +5,80 @@ import { map, tap, delay, catchError } from 'rxjs/operators';
 
 import { LoadingService } from './loading.service';
 
-import { User } from '../../models/User';
+import { Service } from '../../models/Service';
 
 @Injectable({
-	providedIn: 'root'
+  providedIn: 'root'
 })
-export class UserService {
+export class ServiceService {
 
-	private user: User;
+	private services: Service[] = [];
 	private timeout = 250;
 
-	private userSubject: BehaviorSubject<User> = new BehaviorSubject<User>(this.user);
-	private authRedirectSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+	private servicesSubject: BehaviorSubject<Service> = new BehaviorSubject<Service>(this.services);
 
 	constructor(private http: HttpClient, private loadingService: LoadingService) {
 
 	}
 
-	getUser() {
-		this.getSelfUser().subscribe();
-		return this.userSubject.asObservable();
+	getServices() {
+		this.getSelfServices().subscribe();
+		return this.servicesSubject.asObservable();
 	}
 
-	getSelfUser() {
+	getSelfServices() {
 		this.loadingService.setLoading();
-		return this.http.get<User>('api/user/self/')
+		return this.http.get<Service[]>('api/service/all/')
 		.pipe(
 			delay(this.timeout),
-			tap((user) => {
-				this.user = user;
-				this.userSubject.next(this.user);
+			tap((services) => {
+				this.services = services;
+				this.servicesSubject.next(this.services);
 				this.loadingService.unsetLoading();
 			}),
 			catchError(this.handleError.bind(this))
 		);
 	}
 
-	login(alias: String, password: String) {
+	getSelfService(serviceId: String) {
 		this.loadingService.setLoading();
-		return this.http.post<User>('api/login/', { alias, password })
+		return this.http.get<Service>('api/service/self/' + serviceId)
 		.pipe(
 			delay(this.timeout),
-			tap((user) => {
-				this.user = user;
-				this.userSubject.next(this.user);
+			tap((service) => {
 				this.loadingService.unsetLoading();
 			}),
 			catchError(this.handleError.bind(this))
 		);
 	}
 
-	logout() {
+	getService(serviceId: String) {
 		this.loadingService.setLoading();
-		return this.http.post('api/logout', {})
+		return this.http.get<Service>('api/service/' + serviceId)
 		.pipe(
 			delay(this.timeout),
-			tap(() => {
-				this.user = null;
-				this.userSubject.next(this.user);
+			tap((service) => {
 				this.loadingService.unsetLoading();
 			}),
 			catchError(this.handleError.bind(this))
 		);
 	}
 
-	updateUser(user: User) {
+	addService(service: Service) {
 		this.loadingService.setLoading();
-		return this.http.patch<User>('api/user/self', { alias: user.alias, name: user.name, email: user.email, ieee: user.ieee })
+		return this.http.post<Service>('api/service', service)
 		.pipe(
 			delay(this.timeout),
-			tap((user) => {
-				this.user = user;
-				this.userSubject.next(this.user);
+			tap((service) => {
 				this.loadingService.unsetLoading();
 			}),
 			catchError(this.handleError.bind(this))
 		);
 	}
 
-	register(user: User) {
+	updateService(service: Service) {
 		this.loadingService.setLoading();
-		return this.http.post<User>('api/register/', user)
+		return this.http.patch('api/service/' + service._id, { name: service.name, scope: service.scope })
 		.pipe(
 			delay(this.timeout),
 			tap(() => {
@@ -95,12 +88,29 @@ export class UserService {
 		);
 	}
 
-	getAuthRedirect() {
-		return this.authRedirectSubject.asObservable();
+	removeService(serviceId) {
+		this.loadingService.setLoading();
+		return this.http.delete('api/service/' + serviceId)
+		.pipe(
+			delay(this.timeout),
+			tap(() => {
+				this.loadingService.unsetLoading();
+			}),
+			catchError(this.handleError.bind(this))
+		);
 	}
 
-	setAuthRedirect(authRequired) {
-		this.authRedirectSubject.next(authRequired);
+	grantPermission(serviceId: String, scope: String[]) {
+		console.log("id:", serviceId, " scope: ", scope)
+		this.loadingService.setLoading();
+		return this.http.post<any>('api/service/' + serviceId + '/grant', { scope: scope })
+		.pipe(
+			delay(this.timeout),
+			tap((code) => {
+				this.loadingService.unsetLoading();
+			}),
+			catchError(this.handleError.bind(this))
+		);
 	}
 
 	private handleError(error: HttpErrorResponse) {
@@ -114,6 +124,7 @@ export class UserService {
 		} else {
 			console.error(`Backend returned code ${error.status}, ` + `body was: ${error.error}`);
 
+			console.log(error.error)
 			switch (error.error.code) {
 				case 'wrong_user_pass':
 				errorText = 'Usuario/Contraseña incorrectos';

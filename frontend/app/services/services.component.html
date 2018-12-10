@@ -1,0 +1,31 @@
+<p class="h5 text-center mb-3">Servicios</p>
+
+<div class="row justify-content-center">
+	<a class="col-2 input-container link" routerLink="/profile/services/edit">
+		<div class="input-button"><p>+ Añadir Servicio</p></div>
+	</a>
+</div>
+<div class="row mt-3" *ngIf="services && services.length == 0">
+	<div class="col">
+		<p class="h5 text text-left">No tienes servicios creados</p>
+	</div>
+</div>
+<div class="row justify-content-center my-3" *ngFor="let service of services; index as i">
+	<div class="col-10 element-container shadow-1 rounded">
+		<div class="row h-100 align-items-center">
+			<div class="col-3">
+				<p class="h5 my-0">{{service.name}}</p>
+			</div>
+			<div class="col-6 text-center">
+				{{service.scope.length > 0 ? service.scope.join(', ') : 'No tiene ningún scope'}}
+			</div>
+			<div class="col-3">
+				<a class="col-4 input-container link" [routerLink]="'/profile/services/edit/' + service._id">
+					<div class="input-button"><p>Editar</p></div>
+				</a>
+			</div>
+		</div>
+
+	</div>
+</div>
+<p class="error my-3" *ngIf="error">{{error}}</p>

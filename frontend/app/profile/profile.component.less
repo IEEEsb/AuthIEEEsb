@@ -1,0 +1,35 @@
+@import '../../variables.less';
+
+.profile {
+	min-height: 100% !important;
+}
+
+.main {
+	background-color: @bg-color
+	//border-radius: 6px;
+	//padding-top: 5rem;
+	//padding-bottom: 5rem;
+}
+
+.menu {
+	background-color: @ieee-color;
+
+	& .element {
+		background-color: lighten(@ieee-color, 5%);
+		height: 50px;
+		font-size: 20px;
+		color: white;
+
+		&:hover {
+			background-color: lighten(@ieee-color, 10%);
+		}
+		& .text {
+			padding: 10px 0px;
+			text-align: center;
+		}
+	}
+}
+
+.logo-container {
+	background-color: white;
+}

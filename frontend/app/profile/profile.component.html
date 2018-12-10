@@ -1,0 +1,31 @@
+<div class="row justify-content-center h-100">
+	<div class="col-12 h-100 shadow-3 z-index-1">
+		<div class="row profile">
+			<div class="col-2 menu shadow-3 z-index-2">
+				<a class="row logo-container link py-3" routerLink="/profile/user">
+					<div class="col">
+						<img src="assets/logo_entero.svg" class="rounded mx-auto w-100" alt="...">
+					</div>
+				</a>
+				<a class="row element link" routerLink="/profile/user">
+					<div class="col">
+						<div class="text">Datos Personales</div>
+					</div>
+				</a>
+				<a class="row element link" routerLink="/profile/services">
+					<div class="col">
+						<div class="text">Servicios</div>
+					</div>
+				</a>
+				<div class="row element link" (click)="logout()">
+					<div class="col">
+						<div class="text">Cerrar Sesión</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-10 main px-5 py-5">
+				<router-outlet></router-outlet>
+			</div>
+		</div>
+	</div>
+</div>

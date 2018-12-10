@@ -8,7 +8,7 @@ const Service = new Schema({
 	_id: { type: Schema.Types.ObjectId, required: true, default: randomStringClou(12) },
 	name: { type: String, required: true, unique: true },
 	scope: [{ type: String }],
-	secret: { type: String, index: { unique: true, dropDups: true }, default: randomStringClou(12) },
+	secret: { type: String, index: { unique: true, dropDups: true }, default: randomStringClou(20) },
 	owner: { type: Schema.Types.ObjectId, required: true },
 });
 

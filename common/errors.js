@@ -126,11 +126,11 @@ module.exports.globalErrorHandler = (err, req, res, next) => {
 
 	if (err.name === 'MongoError') {
 		if (err.code === 11000) {
-			let key = /.*index:\s(.*)_1/.exec(err.errmsg)[1];
+			const key = /.*index:\s(.*)_1/.exec(err.errmsg)[1];
 			return res.status(400).json({
 				message: 'Duplicate key error',
 				code: 'duplicate_key',
-				key
+				key,
 			});
 		}
 	}
