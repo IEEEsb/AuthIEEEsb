@@ -26,7 +26,6 @@ export class ServiceEditorComponent implements OnInit {
 				this.editing = true;
 				this.serviceService.getSelfService(params['serviceId']).subscribe(
 					(service) => {
-						console.log(service)
 						this.service = service;
 						this.error = null;
 					},

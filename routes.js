@@ -3,43 +3,49 @@ const authController = require('./controllers/authController');
 const servicesController = require('./controllers/servicesController');
 
 const {
-	validators, validate,
+	validators, validate, validateWithoutStripping,
 } = require('./controllers/validators');
+
+function selfUser(req, res, next) {
+	req.params.userId = req.session.userId;
+	next();
+}
 
 const userRouter = express.Router();
 
-userRouter.post('/api/register', validate(validators.register), authController.register);
-userRouter.post('/api/login', validate(validators.login), authController.login);
+userRouter.post('/register', validate(validators.register), authController.register);
+userRouter.post('/login', validate(validators.login), authController.login);
 
 // Endpoints that require authentication
 userRouter.use(authController.authRequired);
 
-userRouter.post('/api/logout', authController.logout);
-userRouter.get('/api/user/self', authController.getSelfUser);
-userRouter.patch('/api/user/self', validate(validators.updateUser), authController.updateUser);
+userRouter.post('/logout', authController.logout);
+userRouter.get('/self', authController.getSelfUser);
+userRouter.patch('/self', validate(validators.updateUser), selfUser, authController.updateUser);
 
-userRouter.get('/api/service/all', servicesController.getSelfServices);
-userRouter.get('/api/service/self/:serviceId', servicesController.getSelfService);
-userRouter.get('/api/service/:serviceId', servicesController.getService);
-userRouter.post('/api/service', validate(validators.addService), servicesController.addService);
-userRouter.patch('/api/service/:serviceId', validate(validators.updateService), servicesController.updateService);
-userRouter.delete('/api/service/:serviceId', servicesController.removeService);
-userRouter.post('/api/service/:serviceId/grant', validate(validators.grantPermission), servicesController.grantPermission);
+userRouter.get('/service/all', servicesController.getSelfServices);
+userRouter.get('/service/self/:serviceId', servicesController.getSelfService);
+userRouter.get('/service/:serviceId', servicesController.getService);
+userRouter.post('/service', validate(validators.addService), servicesController.addService);
+userRouter.patch('/service/:serviceId', validate(validators.updateService), servicesController.updateService);
+userRouter.delete('/service/:serviceId', servicesController.removeService);
+userRouter.post('/service/:serviceId/grant', validate(validators.grantPermission), servicesController.grantPermission);
 
 // Endpoints limited to administrators
 userRouter.use(authController.adminRequired);
 
 const serviceRouter = express.Router();
 
-serviceRouter.post('/api/token', validate(validators.requestToken), servicesController.requestToken);
+serviceRouter.use(validateWithoutStripping(validators.secret), servicesController.secretRequired);
 
-serviceRouter.use(validate(validators.token), servicesController.tokenRequired);
+serviceRouter.use(validateWithoutStripping(validators.token), servicesController.tokenRequired);
 
-serviceRouter.get('/api/user', authController.getUser);
+serviceRouter.get('/scope', servicesController.getScope);
+serviceRouter.get('/user', authController.getUser);
 
 const router = express.Router();
 
-router.use(userRouter);
-router.use(serviceRouter);
+router.use('/api/user', userRouter);
+router.use('/api/service', serviceRouter);
 
 module.exports = router;

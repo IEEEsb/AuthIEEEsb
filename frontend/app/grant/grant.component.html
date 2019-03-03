@@ -5,14 +5,16 @@
 				<img src="assets/logo_entero.svg" class="rounded mx-auto w-100" alt="...">
 			</div>
 		</div>
-		<p class="h2 text-center mb-5">{{service.name}}</p>
+		<p *ngIf="service" class="h2 text-center mb-5">{{service.name}}</p>
 		<p class="h5 text-center mb-4">Quiere acceder a los siguientes datos:</p>
-		<div class="row my-3" *ngFor="let tempScope of service.scope">
-			<div class="col-2">
-				<div class="toggle" (click)="toggleScope(tempScope)" [ngClass]="scope.indexOf(tempScope) == -1 ? '' : 'checked'"><span></span></div>
-			</div>
-			<div class="col-10">
-				{{tempScope | scope}}
+		<div *ngIf="service">
+			<div class="row my-3" *ngFor="let tempScope of service.scope">
+				<div class="col-2">
+					<div class="toggle" (click)="toggleScope(tempScope)" [ngClass]="scope.indexOf(tempScope) == -1 ? '' : 'checked'"><span></span></div>
+				</div>
+				<div class="col-10">
+					{{tempScope | scope}}
+				</div>
 			</div>
 		</div>
 

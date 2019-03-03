@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const { randomString } = require('../common/utils.js');
 
 const User = require('../models/User');
+const Token = require('../models/Token');
 // eslint-disable-next-line import/no-unresolved
 const { pwdIterations } = require('../config.json');
 const {
@@ -31,50 +32,59 @@ function validateSaltedPassword(password, salt, hash, iterations) {
 	});
 }
 
-module.exports.register = (req, res, next) => (
-	generateSaltedPassword(req.body.password, pwdIterations).then(saltedPassword => (
-		User.create({
+module.exports.register = async (req, res, next) => {
+	try {
+		const saltedPassword = await generateSaltedPassword(req.body.password, pwdIterations);
+		await User.create({
 			alias: req.body.alias,
 			email: req.body.email,
 			name: req.body.name,
 			pwd: saltedPassword,
 			ieee: req.body.ieee,
-		})
-	)).then((user) => {
-		if (!user) throw new InternalError();
+		});
 
 		return res.sendStatus(204);
-	}).catch(e => next(e))
-);
+	} catch (e) {
+		return next(e);
+	}
+};
 
-module.exports.login = (req, res, next) => {
-	let user;
+module.exports.login = async (req, res, next) => {
+	try {
+		if (req.session.userId) {
+			const user = await User.findOne({ _id: req.session.userId });
+			return res.send(200).json({ user });
+		}
 
-	return User.findOne({ alias: req.body.alias }).then((_user) => {
+		const user = await User.findOne({ alias: req.body.alias });
 		// Check that the specified user exists in the DB
-		if (!_user) throw new CredentialsError();
-		user = _user;
+		if (!user) throw new CredentialsError();
 
 		// Validate the password provided against the one stored for this
 		// user, using their specific salt
-		return validateSaltedPassword(req.body.password, user.pwd.salt, user.pwd.hash, user.pwd.iterations);
-	}).then((isValid) => {
+		const isValid = await validateSaltedPassword(req.body.password, user.pwd.salt, user.pwd.hash, user.pwd.iterations);
 		if (!isValid) throw new CredentialsError();
+
 		// Successful login. Set the session up and send the minimal set of
 		// user information required by the application
 		req.session.userId = user._id;
 		return res.status(200).json({
-			name: user.name,
-			alias: user.alias,
-			email: user.email,
-			ieee: user.ieee,
-			services: user.services,
+			user: {
+				name: user.name,
+				alias: user.alias,
+				email: user.email,
+				ieee: user.ieee,
+				services: user.services,
+			},
 		});
-	}).catch(e => next(e));
+	} catch (e) {
+		return next(e);
+	}
 };
 
-module.exports.updateUser = (req, res, next) => (
-	User.findOneAndUpdate({ _id: req.session.userId }, { $set: req.body }, { new: true }).then((user) => {
+module.exports.updateUser = async (req, res, next) => {
+	try {
+		const user = await User.findOneAndUpdate({ _id: req.params.userId }, { $set: req.body }, { fields: 'name alias email ieee services', new: true });
 		// Check if any User were updated after the operation
 		if (!user) throw new UnknownObjectError('User');
 
@@ -82,38 +92,45 @@ module.exports.updateUser = (req, res, next) => (
 		// didn't suffer any modifications at all, it just accepts the
 		// request and leaves the object unmutated
 
-		return res.status(200).json({
-			name: user.name,
-			alias: user.alias,
-			email: user.email,
-			ieee: user.ieee,
-			services: user.services,
-		});
-	}).catch(e => next(e))
-);
+		return res.status(200).json({ user });
+	} catch (e) {
+		return next(e);
+	}
+};
 
-module.exports.getSelfUser = (req, res, next) => (
-	User.findOne({ _id: req.session.userId }, '-_id name alias email ieee services.scope services.id').then((user) => {
+module.exports.getSelfUser = async (req, res, next) => {
+	try {
+		const user = await User.findOne({ _id: req.session.userId }, '-_id name alias email ieee services.scope services.id');
 		if (user === null) throw new AuthenticationRequiredError();
 
-		return res.status(200).json(user);
-	}).catch(e => next(e))
-);
+		return res.status(200).json({ user });
+	} catch (e) {
+		return next(e);
+	}
+};
 
-module.exports.getUser = (req, res, next) => (
-	User.findOne({ _id: req.userId }, `-_id ${req.scope.join(' ')}`).then((user) => {
+module.exports.getUser = async (req, res, next) => {
+	try {
+		const user = await User.findOne({ _id: req.userId }, `_id ${req.scope.join(' ')}`);
 		if (!user) throw new InvalidPermissionsError();
 
 		return res.status(200).json(user);
-	}).catch(e => next(e))
-);
+	} catch (e) {
+		return next(e);
+	}
+};
 
-module.exports.logout = (req, res) => (
-	req.session.destroy((e) => {
-		if (e) throw e;
-		return res.sendStatus(204);
-	})
-);
+module.exports.logout = async (req, res, next) => {
+	try {
+		await Token.deleteMany({ token: { $in: req.session.tokens } });
+		return req.session.destroy((e) => {
+			if (e) throw e;
+			return res.sendStatus(204);
+		});
+	} catch (e) {
+		return next(e);
+	}
+};
 
 module.exports.authRequired = (req, res, next) => {
 	if (!req.session.userId) return next(new AuthenticationRequiredError());
@@ -121,11 +138,14 @@ module.exports.authRequired = (req, res, next) => {
 	return next();
 };
 
-module.exports.adminRequired = (req, res, next) => (
-	User.findById(req.session.userId).then((user) => {
+module.exports.adminRequired = async (req, res, next) => {
+	try {
+		const user = await User.findById(req.session.userId);
 		if (user === null) throw new InvalidSessionError();
 		// if (!user.roles.includes(adminRole)) throw new AdminRequiredError();
 
 		return next();
-	}).catch(e => next(e))
-);
+	} catch (e) {
+		return next(e);
+	}
+};

@@ -1,11 +1,11 @@
 <div class="row h-100 justify-content-center">
-	<div class="col-3 shadow-center-3  align-self-center main px-5 py-5 rounded">
+	<div class="col-10 col-lg-3 shadow-center-3  align-self-center main px-5 py-5 rounded" *ngIf="!user">
 		<div class="row mb-4 justify-content-center">
 			<div class="col-4">
 				<img src="assets/logo_entero.svg" class="rounded mx-auto w-100" alt="...">
 			</div>
 		</div>
-		<p class="h2 text-center mb-5">Iniciar Sesión</p>
+		<p class="h2 text-center mb-5 ">Iniciar Sesión</p>
 		<div class="row align-items-center mb-3">
 			<div class="col-4 input-container">
 				<p class="text-center mb-0">Alias:</p>
@@ -31,5 +31,19 @@
 		</div>
 		<p class="error my-3" *ngIf="error">{{error}}</p>
 		<p class="h6 mt-5">Si no tienes una cuenta, <a class="link" routerLink="/register">Regístrate!</a></p>
+	</div>
+	<div class="col-10 col-lg-3 shadow-center-3  align-self-center main px-5 py-5 rounded" *ngIf="user">
+		<div class="row mb-4 justify-content-center">
+			<div class="col-4">
+				<img src="assets/logo_entero.svg" class="rounded mx-auto w-100" alt="...">
+			</div>
+		</div>
+		<p class="h4 my-5 text-center">Has iniciado sesión como:<br>{{user.name}}</p>
+		<div class="row">
+			<div class="col input-container">
+				<div class="input-button" (click)="continue()"><p>Continuar</p></div>
+			</div>
+		</div>
+		<p class="h6 mt-5"><a class="link" routerLink="" (click)="logout()">Cerrar sesión</a> y e iniciar con otra cuenta.</p>
 	</div>
 </div>

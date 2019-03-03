@@ -12,12 +12,34 @@ import { User } from '../../../models/User';
 })
 export class ProfileComponent implements OnInit {
 
+	menuItems = {
+		left: [
+			{
+				text: 'Datos Personales',
+				type: 'router', // router, link or callback
+				link: '/profile/user',
+				roles: [],
+			},
+			{
+				text: 'Servicios',
+				type: 'router', // router, link or callback
+				link: '/profile/services',
+				roles: [],
+			},
+			{
+				text: 'Logout',
+				type: 'callback',
+				callback: this.logout.bind(this),
+				roles: [],
+			}
+		],
+		right: []
+	};
+
 	constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
 	}
 
 	ngOnInit() {
-		console.log(this.route);
-		setTimeout(() => console.log(this.route), 2000);
 	}
 
 	logout() {

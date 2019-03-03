@@ -5,141 +5,150 @@ const Token = require('../models/Token');
 const Service = require('../models/Service');
 // eslint-disable-next-line import/no-unresolved
 const {
-	InvalidPermissionsError, InvalidServiceError, InvalidTokenError, InvalidCodeError, UnknownObjectError,
+	InvalidPermissionsError, InvalidServiceError, InvalidSecretError, InvalidTokenError, UnknownObjectError, InternalError,
 } = require('../common/errors');
 
 
-module.exports.addService = (req, res, next) => (
-	Service.create({
-		name: req.body.name,
-		scope: req.body.scope ? req.body.scope : [],
-		owner: req.session.userId,
-	}).then((service) => {
+module.exports.addService = async (req, res, next) => {
+	try {
+		const service = await Service.create({
+			name: req.body.name,
+			scope: req.body.scope ? req.body.scope : [],
+			owner: req.session.userId,
+		});
 		if (!service) throw new InternalError();
 
 		return res.status(200).send(service);
-	}).catch(e => next(e))
-);
+	} catch (e) {
+		return next(e);
+	}
+};
 
-module.exports.updateService = (req, res, next) => (
-	Service.findOneAndUpdate({ _id: req.params.serviceId, owner: req.session.userId }, { $set: req.body }, { new: true }).then((service) => {
+module.exports.updateService = async (req, res, next) => {
+	try {
+		const service = await Service.findOneAndUpdate({ _id: req.params.serviceId, owner: req.session.userId }, { $set: req.body }, { new: true });
 		if (!service) throw new UnknownObjectError('Service');
 
 		return res.sendStatus(204);
-	}).catch(e => next(e))
-);
+	} catch (e) {
+		return next(e);
+	}
+};
 
-module.exports.removeService = (req, res, next) => (
-	Service.deleteOne({ _id: req.params.serviceId, owner: req.session.userId }).then((result) => {
+module.exports.removeService = async (req, res, next) => {
+	try {
+		const result = await Service.deleteOne({ _id: req.params.serviceId, owner: req.session.userId });
 		if (result.nModified === 0) throw new UnknownObjectError('Service');
 
-		return User.updateMany({ 'services.id': req.params.serviceId }, { $pull: { services: { 'services.id': req.params.serviceId } } });
-	}).then(() => (
-		Token.deleteMany({ service: req.params.serviceId })
-	)).then(() => (
-		res.sendStatus(204)
-	)).catch(e => next(e))
-);
+		await User.updateMany({ 'services.id': req.params.serviceId }, { $pull: { services: { 'services.id': req.params.serviceId } } });
+		return res.sendStatus(204);
+	} catch (e) {
+		return next(e);
+	}
+};
 
-module.exports.grantPermission = (req, res, next) => {
-	let session;
-	let token;
-
-	return Service.findOne({ _id: req.params.serviceId, scope: { $all: req.body.scope } }).then((service) => {
+module.exports.grantPermission = async (req, res, next) => {
+	try {
+		const service = await Service.findOne({ _id: req.params.serviceId, scope: { $all: req.body.scope } });
 		if (!service) throw new InvalidServiceError();
 
-		return mongoose.startSession();
-	}).then((_session) => {
-		session = _session;
+		const session = await mongoose.startSession();
 		session.startTransaction();
 
-		return User.updateOne({ _id: req.session.userId }, { $pull: { services: { 'services.id': req.params.serviceId } } });
-	}).then(() => (
-		User.updateOne({ _id: req.session.userId }, {
-			$push: {
-				services: {
-					id: req.params.serviceId,
-					scope: req.body.scope,
-				},
-			},
-		})
-	)).then((result) => {
+		await User.updateOne({ _id: req.session.userId }, { $pull: { services: { 'services.id': req.params.serviceId } } }).session(session);
+		const result = await User.updateOne({ _id: req.session.userId }, { $push: { services: { id: req.params.serviceId, scope: req.body.scope } } }).session(session);
 		if (result.nModified === 0) {
 			session.abortTransaction();
 			throw new InternalError();
 		}
 
-		return Token.create({
-			user: req.session.userId,
-			service: req.params.serviceId,
-		});
-	}).then((_token) => {
-		if (!_token) {
-			session.abortTransaction();
-			throw new InternalError();
-		}
+		await session.commitTransaction();
 
-		token = _token;
-		return session.commitTransaction();
-	}).then(() => (
-		res.status(200).json({
-			code: token.code,
-		})
-	)).catch(e => next(e));
+		const token = await Token.create({ user: req.session.userId, service: service._id });
+
+		if (!req.session.tokens) {
+			req.session.tokens = [];
+		}
+		req.session.tokens.push(token.token);
+
+		return res.status(200).json({
+			scope: req.body.scope,
+			token: token.token,
+		});
+	} catch (e) {
+		return next(e);
+	}
 };
 
-module.exports.getSelfServices = (req, res, next) => (
-	Service.find({ owner: req.session.userId }, '_id name scope secret').then((services) => {
+module.exports.getSelfServices = async (req, res, next) => {
+	try {
+		const services = await Service.find({ owner: req.session.userId }, '_id name scope secret');
 		if (!services) throw new InvalidPermissionsError();
 
 		return res.status(200).json(services);
-	}).catch(e => next(e))
-);
-
-module.exports.getSelfService = (req, res, next) => (
-	Service.findOne({ _id: req.params.serviceId, owner: req.session.userId }, '_id name scope secret').then((service) => {
-		if (!service) throw new InvalidPermissionsError();
-
-		return res.status(200).json(service);
-	}).catch(e => next(e))
-);
-
-module.exports.getService = (req, res, next) => (
-	Service.findOne({ _id: req.params.serviceId }, '_id name scope').then((service) => {
-		if (!service) throw new InvalidPermissionsError();
-
-		return res.status(200).json(service);
-	}).catch(e => next(e))
-);
-
-
-module.exports.requestToken = (req, res, next) => {
-	let token;
-	return Service.findOne({ _id: req.body.service, secret: req.body.secret }).then((service) => {
-		if (!service) throw new InvalidServiceError();
-
-		return Token.findOneAndUpdate({ code: req.body.code, used: false }, { $set: { used: true } });
-	}).then((_token) => {
-		if (!_token) throw new InvalidCodeError();
-		token = _token;
-
-		return Token.deleteMany({ service: req.body.service, user: token.user, token: { $ne: token.token } });
-	}).then(() => (
-		res.status(200).json({ token: token.token })
-	)).catch(e => next(e));
+	} catch (e) {
+		return next(e);
+	}
 };
 
-module.exports.tokenRequired = (req, res, next) => (
-	Token.findOne({ token: req.query.token }).then((token) => {
+module.exports.getSelfService = async (req, res, next) => {
+	try {
+		const service = await Service.findOne({ _id: req.params.serviceId, owner: req.session.userId }, '_id name scope secret');
+		if (!service) throw new InvalidPermissionsError();
+
+		return res.status(200).json(service);
+	} catch (e) {
+		return next(e);
+	}
+};
+
+module.exports.getService = async (req, res, next) => {
+	try {
+		const service = await Service.findOne({ _id: req.params.serviceId }, '_id name scope');
+		if (!service) throw new InvalidPermissionsError();
+
+		return res.status(200).json(service);
+	} catch (e) {
+		return next(e);
+	}
+};
+
+module.exports.getScope = async (req, res, next) => {
+	try {
+		const user = await User.findOne({ _id: req.userId, 'services.id': req.serviceId }, { 'services.$': 1 });
+		if (!user) throw new UnknownObjectError('User');
+
+		return res.status(200).json(user.services[0].scope);
+	} catch (e) {
+		return next(e);
+	}
+};
+
+module.exports.secretRequired = async (req, res, next) => {
+	try {
+		const service = await Service.findOne({ secret: req.query.secret });
+		if (!service) throw new InvalidSecretError();
+
+		req.serviceId = service._id;
+		return next();
+	} catch (e) {
+		return next(e);
+	}
+};
+
+module.exports.tokenRequired = async (req, res, next) => {
+	try {
+		const token = await Token.findOne({ token: req.query.token, service: req.serviceId });
 		if (!token) throw new InvalidTokenError();
 
-		req.serviceId = token.service;
 		req.userId = token.user;
 
-		return User.findOne({ _id: token.user, 'services.id': token.service }, { 'services.$': 1 });
-	}).then((user) => {
+		const user = await User.findOne({ _id: token.user, 'services.id': req.serviceId }, { 'services.$': 1 });
 		if (!user) throw new InvalidPermissionsError();
+
 		req.scope = user.services[0].scope;
 		return next();
-	}).catch(e => next(e))
-);
+	} catch (e) {
+		return next(e);
+	}
+};

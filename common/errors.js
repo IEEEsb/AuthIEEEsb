@@ -44,6 +44,12 @@ module.exports.InvalidServiceError = class InvalidServiceError extends CustomErr
 	}
 };
 
+module.exports.InvalidSecretError = class InvalidSecretError extends CustomError {
+	constructor() {
+		super('Invalid secret. Please provide a valid one', 'invalid_secret', 401);
+	}
+};
+
 module.exports.InvalidCodeError = class InvalidCodeError extends CustomError {
 	constructor() {
 		super('Invalid code. Please provide a valid one', 'invalid_code', 401);
@@ -71,26 +77,6 @@ module.exports.InvalidPermissionsError = class InvalidPermissionsError extends C
 module.exports.MissingRolesError = class MissingRolesError extends CustomError {
 	constructor() {
 		super('You don\'t have the required roles', 'missing_roles', 403);
-	}
-};
-
-module.exports.NotInCensusError = class NotInCensusError extends CustomError {
-	constructor() {
-		super('You are not allowed to vote in this election. Maybe you already did?', 'not_in_census', 403);
-	}
-};
-
-module.exports.PollsClosedError = class PollsClosedError extends CustomError {
-	constructor(openingDate, closingDate) {
-		super('The polls are closed. Their opening window is set from '
-		+ `${openingDate.toISOString()} to ${closingDate.toISOString()}`,
-		'polls_closed', 400);
-	}
-};
-
-module.exports.PollsNotClosedError = class PollsNotClosedError extends CustomError {
-	constructor(closingDate) {
-		super(`The polls are still open, you must wait until they close (${closingDate.toISOString()})`, 'polls_still_open', 400);
 	}
 };
 

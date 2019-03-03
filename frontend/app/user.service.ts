@@ -3,6 +3,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subject, BehaviorSubject, throwError } from 'rxjs';
 import { map, tap, delay, catchError } from 'rxjs/operators';
 
+import { SHA256 } from 'crypto-js';
+
 import { LoadingService } from './loading.service';
 
 import { User } from '../../models/User';
@@ -33,7 +35,8 @@ export class UserService {
 		.pipe(
 			delay(this.timeout),
 			tap((user) => {
-				this.user = user;
+				this.user = user.user;
+				this.user.token = user.token;
 				this.userSubject.next(this.user);
 				this.loadingService.unsetLoading();
 			}),
@@ -43,11 +46,13 @@ export class UserService {
 
 	login(alias: String, password: String) {
 		this.loadingService.setLoading();
-		return this.http.post<User>('api/login/', { alias, password })
+		console.log(SHA256(password));
+		return this.http.post<User>('api/user/login/', { alias, password: SHA256(password).toString() })
 		.pipe(
 			delay(this.timeout),
-			tap((user) => {
-				this.user = user;
+			tap((data) => {
+				this.user = data.user;
+				this.user.token = data.token
 				this.userSubject.next(this.user);
 				this.loadingService.unsetLoading();
 			}),
@@ -57,7 +62,7 @@ export class UserService {
 
 	logout() {
 		this.loadingService.setLoading();
-		return this.http.post('api/logout', {})
+		return this.http.post('api/user/logout', {})
 		.pipe(
 			delay(this.timeout),
 			tap(() => {
@@ -75,7 +80,7 @@ export class UserService {
 		.pipe(
 			delay(this.timeout),
 			tap((user) => {
-				this.user = user;
+				this.user = user.user;
 				this.userSubject.next(this.user);
 				this.loadingService.unsetLoading();
 			}),
@@ -83,9 +88,12 @@ export class UserService {
 		);
 	}
 
-	register(user: User) {
+	register(_user: User) {
 		this.loadingService.setLoading();
-		return this.http.post<User>('api/register/', user)
+		let user: any = {};
+		Object.assign(user, _user);
+		user.password = SHA256(user.password).toString();
+		return this.http.post<User>('api/user/register/', user)
 		.pipe(
 			delay(this.timeout),
 			tap(() => {

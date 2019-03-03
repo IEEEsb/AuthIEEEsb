@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from './user.service';
 import { LoadingService } from './loading.service';
 import { ServiceService } from './service.service';
+import { UtilsService } from './utils.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +16,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { UserEditorComponent } from './user-editor/user-editor.component';
 import { ServicesComponent } from './services/services.component';
 import { ServiceEditorComponent } from './service-editor/service-editor.component';
+import { MenuComponent } from './menu/menu.component';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { GrantComponent } from './grant/grant.component';
@@ -30,6 +32,7 @@ import { ScopePipe } from './scope.pipe';
 		ServicesComponent,
 		ServiceEditorComponent,
 		GrantComponent,
+		MenuComponent,
 		ScopePipe
 	],
 	imports: [
@@ -43,7 +46,8 @@ import { ScopePipe } from './scope.pipe';
 	providers: [
 		UserService,
 		LoadingService,
-		ServiceService
+		ServiceService,
+		UtilsService,
 	],
 	bootstrap: [AppComponent]
 })

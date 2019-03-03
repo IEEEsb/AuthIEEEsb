@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { UserService } from '../user.service';
+import { UtilsService } from '../utils.service';
 
 import { User } from '../../../models/User';
 
@@ -19,48 +20,54 @@ export class LoginComponent implements OnInit {
 	alias: String = "";
 	password: String = "";
 
-	constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
+	user: User;
+
+	constructor(private userService: UserService, private utilsService: UtilsService, private router: Router, private route: ActivatedRoute) {
 	}
 
 	ngOnInit() {
 
-		this.route.queryParams.subscribe(params => {
-			if (params['callback'] && params['scope'] && params['service']) {
-				this.redirect = true;
-				console.log({
-					callback: params['callback'],
-					scope: params['scope'].split(","),
-					service: params['service'],
-				});
-				this.userService.setAuthRedirect({
-					callback: params['callback'],
-					scope: params['scope'].split(","),
-					service: params['service'],
-				});
+		this.utilsService.getParams().subscribe(params => {
+			if(!params) {
+				return;
 			}
-
-
+			if(params.callback) {
+				this.redirect = true;
+				if(params.service && params.scope) {
+					return this.utilsService.setRedirect('grant', params.callback);
+				}
+			}
 		});
 
 		this.userService.getUser().subscribe((user) => {
-			if(user) {
-				if(this.redirect) {
-					this.router.navigate(['/grant']);
-				} else {
-					this.router.navigate(['/profile']);
-				}
-			}
+			this.user = user;
 		});
 	}
 
 	login() {
 		this.userService.login(this.alias, this.password).subscribe(
-			(data: User) => {
+			(data) => {
+				this.continue();
 				this.error = null;
 			},
 			error => {
 				this.error = error;
 			}
 		);
+	}
+
+	logout() {
+		this.userService.logout().subscribe(
+			(data) => {
+				this.error = null;
+			},
+			error => {
+				this.error = error;
+			}
+		);
+	}
+
+	continue() {
+		return this.utilsService.redirect('login', { token: this.user.token }, ['/profile']);
 	}
 }

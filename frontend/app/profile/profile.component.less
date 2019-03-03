@@ -11,25 +11,11 @@
 	//padding-bottom: 5rem;
 }
 
-.menu {
-	background-color: @ieee-color;
-
-	& .element {
-		background-color: lighten(@ieee-color, 5%);
-		height: 50px;
-		font-size: 20px;
-		color: white;
-
-		&:hover {
-			background-color: lighten(@ieee-color, 10%);
-		}
-		& .text {
-			padding: 10px 0px;
-			text-align: center;
-		}
+.main {
+	@media (min-width: 992px) {
+		height: 100%;
 	}
-}
-
-.logo-container {
-	background-color: white;
+	height: calc(100% - 50px);
+	background-color: #f8f8f8;
+	overflow-y: auto;
 }

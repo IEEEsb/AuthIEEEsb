@@ -61,9 +61,6 @@ module.exports.validators = {
 		},
 	},
 	grantPermission: {
-		params: {
-			serviceId: Joi.string().required(),
-		},
 		body: {
 			scope: Joi.array().items(Joi.string()).required(),
 		},
@@ -71,6 +68,11 @@ module.exports.validators = {
 	token: {
 		query: {
 			token: Joi.string().required(),
+		},
+	},
+	secret: {
+		query: {
+			secret: Joi.string().required(),
 		},
 	},
 	updateElection: {

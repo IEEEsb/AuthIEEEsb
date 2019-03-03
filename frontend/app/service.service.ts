@@ -28,7 +28,7 @@ export class ServiceService {
 
 	getSelfServices() {
 		this.loadingService.setLoading();
-		return this.http.get<Service[]>('api/service/all/')
+		return this.http.get<Service[]>('api/user/service/all/')
 		.pipe(
 			delay(this.timeout),
 			tap((services) => {
@@ -42,7 +42,7 @@ export class ServiceService {
 
 	getSelfService(serviceId: String) {
 		this.loadingService.setLoading();
-		return this.http.get<Service>('api/service/self/' + serviceId)
+		return this.http.get<Service>('api/user/service/self/' + serviceId)
 		.pipe(
 			delay(this.timeout),
 			tap((service) => {
@@ -54,7 +54,7 @@ export class ServiceService {
 
 	getService(serviceId: String) {
 		this.loadingService.setLoading();
-		return this.http.get<Service>('api/service/' + serviceId)
+		return this.http.get<Service>('api/user/service/' + serviceId)
 		.pipe(
 			delay(this.timeout),
 			tap((service) => {
@@ -66,7 +66,7 @@ export class ServiceService {
 
 	addService(service: Service) {
 		this.loadingService.setLoading();
-		return this.http.post<Service>('api/service', service)
+		return this.http.post<Service>('api/user/service', service)
 		.pipe(
 			delay(this.timeout),
 			tap((service) => {
@@ -78,7 +78,7 @@ export class ServiceService {
 
 	updateService(service: Service) {
 		this.loadingService.setLoading();
-		return this.http.patch('api/service/' + service._id, { name: service.name, scope: service.scope })
+		return this.http.patch('api/user/service/' + service._id, { name: service.name, scope: service.scope })
 		.pipe(
 			delay(this.timeout),
 			tap(() => {
@@ -90,7 +90,7 @@ export class ServiceService {
 
 	removeService(serviceId) {
 		this.loadingService.setLoading();
-		return this.http.delete('api/service/' + serviceId)
+		return this.http.delete('api/user/service/' + serviceId)
 		.pipe(
 			delay(this.timeout),
 			tap(() => {
@@ -101,12 +101,11 @@ export class ServiceService {
 	}
 
 	grantPermission(serviceId: String, scope: String[]) {
-		console.log("id:", serviceId, " scope: ", scope)
 		this.loadingService.setLoading();
-		return this.http.post<any>('api/service/' + serviceId + '/grant', { scope: scope })
+		return this.http.post<any>('api/user/service/' + serviceId + '/grant', { scope: scope })
 		.pipe(
 			delay(this.timeout),
-			tap((code) => {
+			tap((scope) => {
 				this.loadingService.unsetLoading();
 			}),
 			catchError(this.handleError.bind(this))
@@ -124,7 +123,6 @@ export class ServiceService {
 		} else {
 			console.error(`Backend returned code ${error.status}, ` + `body was: ${error.error}`);
 
-			console.log(error.error)
 			switch (error.error.code) {
 				case 'wrong_user_pass':
 				errorText = 'Usuario/Contraseña incorrectos';

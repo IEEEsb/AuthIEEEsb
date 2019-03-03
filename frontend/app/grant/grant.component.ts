@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { ServiceService } from '../service.service';
 import { UserService } from '../user.service';
+import { UtilsService } from '../utils.service';
 
 import { Service } from '../../../models/Service';
 import { User } from '../../../models/User';
@@ -13,58 +15,54 @@ import { User } from '../../../models/User';
 })
 export class GrantComponent implements OnInit {
 
-	authRedirect;
 	service: Service = null;
 	user: User = null;
 	scope = [];
 	error = null;
 
-	constructor(private userService: UserService, private serviceService: ServiceService) {
+	constructor(private userService: UserService, private serviceService: ServiceService, private utilsService: UtilsService, private router: Router) {
 
 	}
 
 	ngOnInit() {
-		this.userService.getAuthRedirect().subscribe(authRedirect => {
-			if(authRedirect) {
-				this.serviceService.getService(authRedirect.service).subscribe(
-					(service) => {
-						console.log("service");
-						console.log(authRedirect);
-						console.log(service);
-						this.authRedirect = authRedirect;
-						service.scope = authRedirect.scope.filter(scope => service.scope.indexOf(scope) >= 0);
-						this.service = service;
-						this.scope = service.scope.map(e => e);
-						this.error = null;
-						/*if(this.user) {
-							this.userAlredyGranted();
-						}*/
-					},
-					(error) => {
-						this.error = error;
-					}
-				);
-
-				/*this.userService.getUser().subscribe(
-					(user) => {
-						if(user) {
-							console.log("user")
-							this.user = user;
-							if(this.service) {
-								console.log(this.user);
-								this.userAlredyGranted();
-							}
-						}
-					},
-					(error) => {
-						this.error = error;
-					}
-				);*/
+		this.utilsService.getParams().subscribe(params => {
+			if(!params) {
+				return;
 			}
+			if(params.callback) {
+				this.utilsService.setRedirect('grant', params.callback);
+			}
+			if(!params.scope || !params.service) {
+				this.error = "Parámetros inválidos";
+				return;
+			}
+			let _scope = params.scope.split(",");
+			this.serviceService.getService(params.service).subscribe(
+				(service) => {
+					service.scope = _scope.filter(scope => service.scope.indexOf(scope) >= 0);
+					this.service = service;
+					this.scope = service.scope.map(e => e);
+					this.error = null;
+				},
+				(error) => {
+					this.error = error;
+				}
+			);
+
+			this.userService.getSelfUser().subscribe(
+				(data) => {
+					this.user = data.user;
+				},
+				(error) => {
+					this.error = error;
+					this.router.navigate(['/login']);
+				}
+			);
 		});
 	}
 
 	userAlredyGranted() {
+		if(!this.user.services) return;
 		let userService = this.user.services.find(e => e.id == this.service._id);
 		if (userService) {
 			let result = true;
@@ -82,11 +80,9 @@ export class GrantComponent implements OnInit {
 	}
 
 	grant() {
-		console.log(this.service);
 		this.serviceService.grantPermission(this.service._id, this.scope).subscribe(
-			(code) => {
-				console.log(this.authRedirect.callback + `?code=${code.code}`);
-				window.location.replace(`${this.authRedirect.callback}?code=${code.code}`);
+			(data) => {
+				this.utilsService.redirect('grant', { scope: data.scope, token: data.token });
 			},
 			(error) => {
 				this.error = error;
