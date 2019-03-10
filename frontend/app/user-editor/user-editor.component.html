@@ -1,47 +1,47 @@
-<div class="row justify-content-center">
-	<div class="col-6 bg-white shadow-2 py-5 rounded">
-		<p class="h5 text-center mb-5">Perfil</p>
-		<div class="row mb-3">
-			<div class="col-4">
-				<p class="h5 text-center text">Alias:</p>
+<div class="row h-100 mx-0 justify-content-center">
+	<div class="col-12 col-lg-10 col-xl-8 py-5">
+		<ieeesb-section>
+			<p class="h5 text-center">{{user.name}}</p>
+			<div class="row justify-content-center">
+				<div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="user.alias" placeholder="Alias" disabled>
+					</mat-form-field>
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="user.email" placeholder="E-mail" disabled>
+					</mat-form-field>
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="user.ieee" placeholder="IEEE" disabled>
+					</mat-form-field>
+					<ieeesb-tags [item]="user.roles" [tags]="[]" label="Roles" [editing]="false"></ieeesb-tags>
+				</div>
 			</div>
-			<div class="col-7 input-container">
-				<input type="text" class="input-text" [(ngModel)]="user.alias" placeholder="Alias">
-				<span></span>
+			<p class="error my-3" *ngIf="error">{{error}}</p>
+		</ieeesb-section>
+		<ieeesb-section *ngIf="!user.enabled">
+			<p class="h5 text-center">Habilitar Usuario</p>
+			<div class="row mx-0 justify-content-center mt-3">
+				<div class="col-auto">
+					<ieeesb-button label="Habilitar" (click)="enableUser()"></ieeesb-button>
+				</div>
 			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-4">
-				<p class="h5 text-center text">E-mail:</p>
+			<p class="error my-3" *ngIf="error">{{error}}</p>
+		</ieeesb-section>
+		<ieeesb-section>
+			<p class="h5 text-center">Añadir Rol</p>
+			<div class="row mx-0 justify-content-center mt-3">
+				<div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="role" placeholder="Rol">
+					</mat-form-field>
+				</div>
 			</div>
-			<div class="col-7 input-container">
-				<input type="text" class="input-text" [(ngModel)]="user.email" placeholder="E-mail">
-				<span></span>
+			<div class="row mx-0 justify-content-center mt-3">
+				<div class="col-auto">
+					<ieeesb-button label="Añadir" (click)="addRole()"></ieeesb-button>
+				</div>
 			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-4">
-				<p class="h5 text-center text">Nombre:</p>
-			</div>
-			<div class="col-7 input-container">
-				<input type="text" class="input-text" [(ngModel)]="user.name" placeholder="Nombre y apellidos">
-				<span></span>
-			</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-4">
-				<p class="h5 text-center text">Nº IEEE:</p>
-			</div>
-			<div class="col-7 input-container">
-				<input type="text" class="input-text" [(ngModel)]="user.ieee" placeholder="Nº IEEE">
-				<span></span>
-			</div>
-		</div>
-		<div class="row justify-content-center">
-			<div class="col-4 input-container">
-				<div class="input-button" (click)="updateUser()"><p>Actualizar</p></div>
-			</div>
-		</div>
-		<p class="error my-3" *ngIf="error">{{error}}</p>
+			<p class="error my-3" *ngIf="error">{{error}}</p>
+		</ieeesb-section>
 	</div>
 </div>

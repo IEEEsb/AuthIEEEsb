@@ -8,56 +8,26 @@
 		<p class="h2 text-center mb-5">Registrarse</p>
 		<div class="row form-container">
 			<div class="col">
-				<div class="row align-items-center mb-3">
-					<div class="col-4 input-container">
-						<p class="text-center mb-0">Alias:</p>
-					</div>
-					<div class="col-8 input-container">
-						<input type="text" class="input-text" [(ngModel)]="user.alias" placeholder="Alias">
-						<span></span>
-					</div>
-				</div>
-				<div class="row align-items-center mb-3">
-					<div class="col-4 input-container">
-						<p class="text-center mb-0">E-mail:</p>
-					</div>
-					<div class="col input-container">
-						<input type="email" class="input-text" [(ngModel)]="user.email" placeholder="E-mail">
-						<span></span>
-					</div>
-				</div>
-				<div class="row align-items-center mb-3">
-					<div class="col-4 input-container">
-						<p class="text-center mb-0">Nombre:</p>
-					</div>
-					<div class="col input-container">
-						<input type="text" class="input-text" [(ngModel)]="user.name" placeholder="Nombre y apellidos">
-						<span></span>
-					</div>
-				</div>
-				<div class="row align-items-center mb-3">
-					<div class="col-4 input-container">
-						<p class="text-center mb-0">Nº IEEE:</p>
-					</div>
-					<div class="col input-container">
-						<input type="text" class="input-text" [(ngModel)]="user.ieee" placeholder="Nº IEEE">
-						<span></span>
-					</div>
-				</div>
-				<div class="row align-items-center mb-3">
-					<div class="col-4 input-container">
-						<p class="text-center mb-0">Contraseña:</p>
-					</div>
-					<div class="col input-container">
-						<input type="password" class="input-text" [(ngModel)]="user.password" placeholder="Contraseña">
-						<span></span>
-					</div>
-				</div>
+				<mat-form-field class="w-100">
+					<input matInput [ngModel]="user.name" placeholder="Nombre">
+				</mat-form-field>
+				<mat-form-field class="w-100">
+					<input matInput [ngModel]="user.alias" placeholder="Alias">
+				</mat-form-field>
+				<mat-form-field class="w-100">
+					<input matInput [ngModel]="user.email" placeholder="E-mail">
+				</mat-form-field>
+				<mat-form-field class="w-100">
+					<input matInput [ngModel]="user.ieee" type="number" placeholder="IEEE">
+				</mat-form-field>
+				<mat-form-field class="w-100">
+					<input matInput [ngModel]="user.password" type="password" placeholder="Contraseña">
+				</mat-form-field>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col input-container">
-				<div class="input-button" (click)="register()"><p>Registrarse</p></div>
+		<div class="row justify-content-center">
+			<div class="col-auto">
+				<ieeesb-button (click)="register()" label="Registrarse"></ieeesb-button>
 			</div>
 		</div>
 		<p class="error my-3" *ngIf="error">{{error}}</p>

@@ -56,7 +56,7 @@ module.exports.login = async (req, res, next) => {
 			return res.send(200).json({ user });
 		}
 
-		const user = await User.findOne({ alias: req.body.alias });
+		const user = await User.findOne({ alias: req.body.alias, enabled: true });
 		// Check that the specified user exists in the DB
 		if (!user) throw new CredentialsError();
 
@@ -82,9 +82,32 @@ module.exports.login = async (req, res, next) => {
 	}
 };
 
+module.exports.logout = async (req, res, next) => {
+	try {
+		await Token.deleteMany({ token: { $in: req.session.tokens } });
+		return req.session.destroy((e) => {
+			if (e) throw e;
+			return res.sendStatus(204);
+		});
+	} catch (e) {
+		return next(e);
+	}
+};
+
+module.exports.addRole = async (req, res, next) => {
+	try {
+		const user = await User.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { roles: req.body.role } }, { new: true, fields: '_id name alias email ieee services enabled roles' });
+		if (!user) throw new UnknownObjectError('User');
+
+		return res.status(200).send({ user });
+	} catch (e) {
+		return next(e);
+	}
+};
+
 module.exports.updateUser = async (req, res, next) => {
 	try {
-		const user = await User.findOneAndUpdate({ _id: req.params.userId }, { $set: req.body }, { fields: 'name alias email ieee services', new: true });
+		const user = await User.findOneAndUpdate({ _id: req.params.userId }, { $set: req.body }, { fields: '_id name alias email ieee services enabled roles', new: true });
 		// Check if any User were updated after the operation
 		if (!user) throw new UnknownObjectError('User');
 
@@ -98,10 +121,15 @@ module.exports.updateUser = async (req, res, next) => {
 	}
 };
 
-module.exports.getSelfUser = async (req, res, next) => {
+module.exports.enableUser = async (req, res, next) => {
 	try {
-		const user = await User.findOne({ _id: req.session.userId }, '-_id name alias email ieee services.scope services.id');
-		if (user === null) throw new AuthenticationRequiredError();
+		const user = await User.findOneAndUpdate({ _id: req.params.userId }, { $set: { enabled: true } }, { fields: 'name alias email ieee services enabled roles', new: true });
+		// Check if any User were updated after the operation
+		if (!user) throw new UnknownObjectError('User');
+
+		// The backend doesn't complain if the User existed but it
+		// didn't suffer any modifications at all, it just accepts the
+		// request and leaves the object unmutated
 
 		return res.status(200).json({ user });
 	} catch (e) {
@@ -110,6 +138,17 @@ module.exports.getSelfUser = async (req, res, next) => {
 };
 
 module.exports.getUser = async (req, res, next) => {
+	try {
+		const user = await User.findOne({ _id: req.params.userId }, '_id name alias email ieee services enabled roles');
+		if (user === null) throw new AuthenticationRequiredError();
+
+		return res.status(200).json({ user });
+	} catch (e) {
+		return next(e);
+	}
+};
+
+module.exports.getUserWithScope = async (req, res, next) => {
 	try {
 		const user = await User.findOne({ _id: req.userId }, `_id ${req.scope.join(' ')}`);
 		if (!user) throw new InvalidPermissionsError();
@@ -120,13 +159,11 @@ module.exports.getUser = async (req, res, next) => {
 	}
 };
 
-module.exports.logout = async (req, res, next) => {
+module.exports.getAllUsers = async (req, res, next) => {
 	try {
-		await Token.deleteMany({ token: { $in: req.session.tokens } });
-		return req.session.destroy((e) => {
-			if (e) throw e;
-			return res.sendStatus(204);
-		});
+		const users = await User.find({ }, '_id name alias email ieee services enabled roles');
+
+		return res.status(200).json({ users });
 	} catch (e) {
 		return next(e);
 	}

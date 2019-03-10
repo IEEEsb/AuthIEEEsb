@@ -1,4 +1,4 @@
-<div class="row h-100 justify-content-center">
+<div class="row h-100 mx-0 justify-content-center">
 	<div class="col-3 shadow-center-3  align-self-center main px-5 py-5 rounded">
 		<div class="row mb-4 justify-content-center">
 			<div class="col-4">
@@ -8,21 +8,10 @@
 		<p *ngIf="service" class="h2 text-center mb-5">{{service.name}}</p>
 		<p class="h5 text-center mb-4">Quiere acceder a los siguientes datos:</p>
 		<div *ngIf="service">
-			<div class="row my-3" *ngFor="let tempScope of service.scope">
-				<div class="col-2">
-					<div class="toggle" (click)="toggleScope(tempScope)" [ngClass]="scope.indexOf(tempScope) == -1 ? '' : 'checked'"><span></span></div>
-				</div>
-				<div class="col-10">
-					{{tempScope | scope}}
-				</div>
-			</div>
+			<mat-slide-toggle color="primary" [ngModel]="scope.indexOf(tempScope) >= 0" (ngModelChange)="toggleScope(tempScope, $event)" *ngFor="let tempScope of service.scope">tempScope | scope</mat-slide-toggle>
 		</div>
 
-		<div class="row">
-			<div class="col input-container">
-				<div class="input-button" (click)="grant()"><p>Autorizar</p></div>
-			</div>
-		</div>
+		<ieeesb-button (click)="grant()" label="Autorizar"></ieeesb-button>
 		<p class="error my-3" *ngIf="error">{{error}}</p>
 	</div>
 </div>

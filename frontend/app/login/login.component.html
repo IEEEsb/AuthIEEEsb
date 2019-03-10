@@ -1,4 +1,4 @@
-<div class="row h-100 justify-content-center">
+<div class="row h-100 mx-0 justify-content-center">
 	<div class="col-10 col-lg-3 shadow-center-3  align-self-center main px-5 py-5 rounded" *ngIf="!user">
 		<div class="row mb-4 justify-content-center">
 			<div class="col-4">
@@ -6,29 +6,13 @@
 			</div>
 		</div>
 		<p class="h2 text-center mb-5 ">Iniciar Sesión</p>
-		<div class="row align-items-center mb-3">
-			<div class="col-4 input-container">
-				<p class="text-center mb-0">Alias:</p>
-			</div>
-			<div class="col-8 input-container">
-				<input type="text" class="input-text" [(ngModel)]="alias" placeholder="Alias">
-				<span></span>
-			</div>
-		</div>
-		<div class="row align-items-center mb-3">
-			<div class="col-4 input-container">
-				<p class="text-center mb-0">Contraseña:</p>
-			</div>
-			<div class="col-8 input-container">
-				<input type="password" class="input-text" [(ngModel)]="password" placeholder="Contraseña">
-				<span></span>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col input-container">
-				<div class="input-button" (click)="login()"><p>Iniciar Sesión</p></div>
-			</div>
-		</div>
+		<mat-form-field class="w-100">
+			<input matInput [ngModel]="alias" placeholder="Alias">
+		</mat-form-field>
+		<mat-form-field class="w-100">
+			<input matInput [ngModel]="password" type="password" placeholder="Contraseña">
+		</mat-form-field>
+		<ieeesb-button (click)="login()" label="Iniciar Sesión"></ieeesb-button>
 		<p class="error my-3" *ngIf="error">{{error}}</p>
 		<p class="h6 mt-5">Si no tienes una cuenta, <a class="link" routerLink="/register">Regístrate!</a></p>
 	</div>
@@ -39,11 +23,7 @@
 			</div>
 		</div>
 		<p class="h4 my-5 text-center">Has iniciado sesión como:<br>{{user.name}}</p>
-		<div class="row">
-			<div class="col input-container">
-				<div class="input-button" (click)="continue()"><p>Continuar</p></div>
-			</div>
-		</div>
-		<p class="h6 mt-5"><a class="link" routerLink="" (click)="logout()">Cerrar sesión</a> y e iniciar con otra cuenta.</p>
+		<ieeesb-button (click)="continue()" label="Continuar"></ieeesb-button>
+		<p class="h6 mt-5"><a class="link" [routerLink]="" (click)="logout()">Cerrar sesión</a> y e iniciar con otra cuenta.</p>
 	</div>
 </div>

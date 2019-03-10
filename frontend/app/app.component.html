@@ -1,6 +1,2 @@
-<div class="loader" *ngIf="loading">
-	<div class="bar"></div>
-</div>
-<div class="h-100 container-fluid">
-	<router-outlet></router-outlet>
-</div>
+<ieeesb-loading [loading]="loading"></ieeesb-loading>
+<router-outlet></router-outlet>

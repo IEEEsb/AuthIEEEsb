@@ -1,0 +1,8 @@
+<div class="row h-100 py-5 mx-0">
+	<div class="col-12">
+		<ieeesb-title title="Usuarios" [(search)]="search"></ieeesb-title>
+		<ieeesb-section>
+			<ieeesb-list [items]="users | filter:search:['name', 'alias', 'email', 'ieee']" [labels]="['Nombre', 'Alias', 'E-mail', 'IEEE']" [keys]="['name', 'alias', 'email', 'ieee']" link="/admin/users/" linkKey="_id" linkLabel="Detalles"></ieeesb-list>
+		</ieeesb-section>
+	</div>
+</div>

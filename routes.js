@@ -20,7 +20,7 @@ userRouter.post('/login', validate(validators.login), authController.login);
 userRouter.use(authController.authRequired);
 
 userRouter.post('/logout', authController.logout);
-userRouter.get('/self', authController.getSelfUser);
+userRouter.get('/self', selfUser, authController.getUser);
 userRouter.patch('/self', validate(validators.updateUser), selfUser, authController.updateUser);
 
 userRouter.get('/service/all', servicesController.getSelfServices);
@@ -34,6 +34,11 @@ userRouter.post('/service/:serviceId/grant', validate(validators.grantPermission
 // Endpoints limited to administrators
 userRouter.use(authController.adminRequired);
 
+userRouter.get('/all', authController.getAllUsers);
+userRouter.get('/:userId', authController.getUser);
+userRouter.post('/:userId/addRole', validate(validators.addRole), authController.addRole);
+userRouter.post('/:userId/enable', authController.enableUser);
+
 const serviceRouter = express.Router();
 
 serviceRouter.use(validateWithoutStripping(validators.secret), servicesController.secretRequired);
@@ -41,7 +46,7 @@ serviceRouter.use(validateWithoutStripping(validators.secret), servicesControlle
 serviceRouter.use(validateWithoutStripping(validators.token), servicesController.tokenRequired);
 
 serviceRouter.get('/scope', servicesController.getScope);
-serviceRouter.get('/user', authController.getUser);
+serviceRouter.get('/user', authController.getUserWithScope);
 
 const router = express.Router();
 

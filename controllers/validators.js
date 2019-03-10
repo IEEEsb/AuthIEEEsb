@@ -29,14 +29,17 @@ module.exports.validators = {
 			password: Joi.string().required(),
 		},
 	},
+	addRole: {
+		body: {
+			role: Joi.string().regex(/[a-zA-Z]+/).required().label('Rol'),
+		},
+	},
 	updateUser: {
 		body: {
 			alias: Joi.string(),
 			email: Joi.string().email(),
 			name: Joi.string(),
 			ieee: Joi.number(),
-			pwd: Joi.any().forbidden(),
-			services: Joi.any().forbidden(),
 		},
 	},
 	requestToken: {

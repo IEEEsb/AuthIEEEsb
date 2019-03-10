@@ -49,7 +49,13 @@ module.exports.removeService = async (req, res, next) => {
 
 module.exports.grantPermission = async (req, res, next) => {
 	try {
-		const service = await Service.findOne({ _id: req.params.serviceId, scope: { $all: req.body.scope } });
+		const query = {
+			_id: req.params.serviceId,
+		};
+		if (req.body.scope.length > 0) {
+			query.scope = { $all: req.body.scope };
+		}
+		const service = await Service.findOne(query);
 		if (!service) throw new InvalidServiceError();
 
 		const session = await mongoose.startSession();

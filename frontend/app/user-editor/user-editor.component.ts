@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { UserService } from '../user.service';
 
@@ -12,32 +13,51 @@ import { User } from '../../../models/User';
 export class UserEditorComponent implements OnInit {
 
 	user: User = {};
-	error = null;
+	error;
+	role = '';
 
-	constructor(private userService: UserService) {
-
-	}
+	constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) { }
 
 	ngOnInit() {
-		this.userService.getUser().subscribe((user) => {
-			if(user) {
-				this.user = user;
-			} else {
-				this.user = {}
+		this.route.params.subscribe(params => {
+			if (params['userId']) {
+				this.userService.getUser(params['userId']).subscribe(
+					(data) => {
+						this.user = data.user;
+						this.error = null;
+					},
+					(error) => {
+						this.error = error;
+					}
+				);
 			}
 		});
 	}
 
-	updateUser() {
-
-		this.userService.updateUser(this.user).subscribe(
-			() => {
+	addRole() {
+		if(!confirm(`¿Seguro que quieres introducir este rol: ${this.role}?`)) return;
+		this.userService.addRole(this.user._id, this.role).subscribe(
+			(data) => {
+				this.user = data.user;
 				this.error = null;
 			},
 			(error) => {
 				this.error = error;
 			}
-		);
+		)
+	}
+
+	enableUser() {
+		if(!confirm(`¿Seguro que quieres habilitar este usuario?`)) return;
+		this.userService.enableUser(this.user._id).subscribe(
+			(data) => {
+				this.user = data.user;
+				this.error = null;
+			},
+			(error) => {
+				this.error = error;
+			}
+		)
 	}
 
 

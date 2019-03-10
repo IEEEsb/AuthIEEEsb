@@ -13,7 +13,9 @@ import { Service } from '../../../models/Service';
 export class ServiceEditorComponent implements OnInit {
 
 	editing = false;
-	service: Service = {};
+	service: Service = {
+		scope: []
+	};
 
 	error = null;
 
@@ -56,7 +58,7 @@ export class ServiceEditorComponent implements OnInit {
 	addService() {
 		this.serviceService.addService(this.service).subscribe(
 			(service) => {
-				this.router.navigate(['/profile/services/edit/' + service._id]);
+				this.router.navigate(['/services/' + service._id]);
 				this.error = null;
 			},
 			error => {
@@ -68,7 +70,7 @@ export class ServiceEditorComponent implements OnInit {
 	updateService() {
 		this.serviceService.updateService(this.service).subscribe(
 			() => {
-				this.router.navigate(['/profile/services/edit/' + this.service._id]);
+				this.router.navigate(['/services/' + this.service._id]);
 				this.error = null;
 			},
 			error => {

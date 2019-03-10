@@ -13,16 +13,32 @@ body {
 	background-size: 100% auto;
 	background-position: center top;
 	background-attachment: fixed;
-	font-family: Lato !important;
+	font-family: 'Roboto Mono', 'Roboto' !important;
+	font-size: 16px !important;
 }
 
-.link {
+.form-control:focus, .btn-primary:focus{
+	border-color: #ced4da !important;
+	outline: 0;
+	box-shadow: none !important;
+}
+
+a {
 	cursor: pointer;
 	text-decoration: none;
 	user-drag: none;
 	-webkit-user-drag: none;
+	&.disabled {
+		pointer-events:none;
+		opacity: 0.65;
+	}
 	&:hover {
-		text-decoration: none;
+		text-decoration: none !important;
+	}
+	&:focus {
+		border-color: #ced4da !important;
+		outline: 0;
+		box-shadow: none !important;
 	}
 }
 
@@ -30,114 +46,8 @@ body {
 	color: @err-color;
 }
 
-.input-container {
-	padding: 0px !important;
-
-	.input-text {
-		padding: 0px 5px;
-		padding-bottom: 8px;
-		padding-top: 8px;
-		width: 100%;
-		border: none;
-		background-color:rgba(0, 0, 0, 0);
-		color: black;
-		& + span{
-			position: absolute;
-			background: #E88A0C;
-			//background: lighten(@ieee-color, 20%);
-			left: 0px;
-			bottom: 0px;
-			height: 2px;
-			width: 100%;
-
-			&::after {
-				content: "";
-				background: @ieee-color;
-				position: absolute;
-				left: 0px;
-				bottom: 0px;
-				height: 2px;
-				width: 0%;
-				transition: all 0.4s;
-			}
-		}
-
-		&:-webkit-autofill {
-			-webkit-box-shadow: 0 0 0 30px white inset;
-		}
-
-		&:focus {
-			& + span:after {
-				content: "";
-				background: @ieee-color;
-				position: absolute;
-				left: 0px;
-				bottom: 0px;
-				height: 2px;
-				width: 100%;
-				transition: all 0.4s;
-			}
-			outline-color: white;
-		}
-	}
-
-	.input-button {
-		//margin-top: 40px;
-		margin-left: auto;
-		margin-right: auto;
-		//width: 70%;
-		background-color: @ieee-color;
-		text-align: center;
-		color: white;
-		font-size: 20px;
-		cursor: pointer;
-		transition: all 0.2s;
-		border-radius: .25rem!important;
-
-		&:extend(.rounded all);
-		&:extend(.shadow-1 all);
-
-		&:hover {
-			background-color: darken(@ieee-color, 10%);
-			transition: all 0.2s;
-		}
-
-		& p {
-			margin: 0px;
-			padding: 5px 0px;
-		}
-	}
-}
-
-.pill-container {
-	padding: 0px 5px !important;
-
-	& .pill {
-		height: 30px;
-		margin: 1px 0px;
-		background-color: @ieee-color;
-		color: white;
-
-		&:extend(.rounded all);
-		&:extend(.shadow-1 all);
-
-		& a {
-			color: darken(@bg-color, 10%) !important;
-		}
-
-		&:hover a {
-			color: darken(@bg-color, 30%) !important;
-		}
-	}
-}
-
 .rounded {
 	border-radius: .25rem!important;
-}
-
-.text {
-	padding: 4px 0px;
-	text-align: center;
 }
 
 .shadow-center-2 {
@@ -193,7 +103,20 @@ body {
 	z-index: 1000;
 }
 
+.rounded-top-0 {
+	border-top-left-radius: 0px !important;
+	border-top-right-radius: 0px !important;
+}
 
+.rounded-bottom-0 {
+	border-bottom-left-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+}
+
+.center-childs {
+	display: flex;
+	align-items: center;
+}
 
 @primary: #4F2EDC;
 @primary-light: #947ADA;

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { ServiceService } from '../service.service';
 import { UserService } from '../user.service';
-import { UtilsService } from '../utils.service';
+import { UtilsService } from 'angular-ieeesb-lib';
 
 import { Service } from '../../../models/Service';
 import { User } from '../../../models/User';
@@ -82,7 +82,10 @@ export class GrantComponent implements OnInit {
 	grant() {
 		this.serviceService.grantPermission(this.service._id, this.scope).subscribe(
 			(data) => {
-				this.utilsService.redirect('grant', { scope: data.scope, token: data.token });
+				const navigate = this.utilsService.redirect('grant', { scope: data.scope, token: data.token });
+				if(navigate) {
+					this.router.navigate(navigate);
+				}
 			},
 			(error) => {
 				this.error = error;

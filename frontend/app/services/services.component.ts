@@ -12,7 +12,7 @@ import { Service } from '../../../models/Service';
 export class ServicesComponent implements OnInit {
 
 	services: Service[] = [];
-	
+
 	constructor(private serviceService: ServiceService) {
 
 	}

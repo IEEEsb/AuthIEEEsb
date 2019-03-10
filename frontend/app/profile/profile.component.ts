@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 
 import { UserService } from '../user.service';
 
@@ -12,42 +11,29 @@ import { User } from '../../../models/User';
 })
 export class ProfileComponent implements OnInit {
 
-	menuItems = {
-		left: [
-			{
-				text: 'Datos Personales',
-				type: 'router', // router, link or callback
-				link: '/profile/user',
-				roles: [],
-			},
-			{
-				text: 'Servicios',
-				type: 'router', // router, link or callback
-				link: '/profile/services',
-				roles: [],
-			},
-			{
-				text: 'Logout',
-				type: 'callback',
-				callback: this.logout.bind(this),
-				roles: [],
-			}
-		],
-		right: []
-	};
+	user: User = {};
+	error = null;
 
-	constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
+	constructor(private userService: UserService) {
+
 	}
 
 	ngOnInit() {
+		this.userService.getLoggedUser().subscribe((user) => {
+			if(user) {
+				this.user = user;
+			}
+		});
 	}
 
-	logout() {
-		this.userService.logout().subscribe(
+	updateUser() {
+
+		this.userService.updateUser(this.user).subscribe(
 			() => {
-				this.router.navigate(['/login']);
+				this.error = null;
 			},
 			(error) => {
+				this.error = error;
 			}
 		);
 	}

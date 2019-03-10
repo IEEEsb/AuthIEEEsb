@@ -1,8 +1,30 @@
-<div class="row justify-content-center h-100">
-	<div class="col-12 h-100 px-0">
-		<app-menu [items]='menuItems' align="left"></app-menu>
-		<div class="main px-5 py-5">
-			<router-outlet></router-outlet>
-		</div>
+<div class="row h-100 mx-0 px-0 justify-content-center main">
+	<div class="col-12 col-lg-10 col-xl-8 py-5">
+		<ieeesb-section>
+			<p class="h5 text-center">Perfil</p>
+			<div class="row justify-content-center mt-2">
+				<div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="user.name" placeholder="Nombre">
+					</mat-form-field>
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="user.alias" placeholder="Alias">
+					</mat-form-field>
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="user.email" placeholder="E-mail">
+					</mat-form-field>
+					<mat-form-field class="w-100">
+						<input matInput [ngModel]="user.ieee" placeholder="IEEE">
+					</mat-form-field>
+					<ieeesb-tags [item]="user.roles" [tags]="[]" label="Roles" [editing]="false"></ieeesb-tags>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-4 input-container">
+					<ieeesb-button label="Actualizar" (click)="updateUser()"></ieeesb-button>
+				</div>
+			</div>
+			<p class="error my-3" *ngIf="error">{{error}}</p>
+		</ieeesb-section>
 	</div>
 </div>

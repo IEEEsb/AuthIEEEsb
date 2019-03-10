@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { UserService } from '../user.service';
-import { UtilsService } from '../utils.service';
+import { UtilsService } from 'angular-ieeesb-lib';
 
 import { User } from '../../../models/User';
 
@@ -34,12 +34,12 @@ export class LoginComponent implements OnInit {
 			if(params.callback) {
 				this.redirect = true;
 				if(params.service && params.scope) {
-					return this.utilsService.setRedirect('grant', params.callback);
+					this.utilsService.setRedirect('grant', params.callback);
 				}
 			}
 		});
 
-		this.userService.getUser().subscribe((user) => {
+		this.userService.getLoggedUser().subscribe((user) => {
 			this.user = user;
 		});
 	}
@@ -59,6 +59,7 @@ export class LoginComponent implements OnInit {
 	logout() {
 		this.userService.logout().subscribe(
 			(data) => {
+				console.log('hola')
 				this.error = null;
 			},
 			error => {
@@ -68,6 +69,9 @@ export class LoginComponent implements OnInit {
 	}
 
 	continue() {
-		return this.utilsService.redirect('login', { token: this.user.token }, ['/profile']);
+		const navigate = this.utilsService.redirect('login', { token: this.user.token }, ['/profile']);
+		if(navigate) {
+			return this.router.navigate(navigate);
+		}
 	}
 }

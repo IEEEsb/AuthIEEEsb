@@ -22,6 +22,7 @@
 				"build": {
 					"builder": "@angular-devkit/build-angular:browser",
 					"options": {
+						"preserveSymlinks": true,
 						"outputPath": "dist",
 						"index": "frontend/index.html",
 						"main": "frontend/main.ts",
@@ -34,7 +35,8 @@
 						"styles": [
 							"frontend/styles.less",
 							"frontend/assets/bootstrap.min.css",
-							"frontend/assets/Lato.css"
+							"frontend/assets/Lato.css",
+							"./node_modules/angular-ieeesb-lib/theme.scss"
 						],
 						"scripts": [
 							"frontend/assets/bootstrap.min.js"
