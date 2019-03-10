@@ -10,10 +10,10 @@
 						<input matInput [(ngModel)]="service.name" placeholder="Nombre">
 					</mat-form-field>
 					<ieeesb-tags [(item)]="service.scope" [tags]="['name', 'alias', 'email', 'ieee']" label="Scope"></ieeesb-tags>
-					<mat-form-field class="w-100" *ngIf="!editing">
+					<mat-form-field class="w-100" *ngIf="editing">
 						<input matInput [ngModel]="service._id" placeholder="Id" disabled>
 					</mat-form-field>
-					<mat-form-field class="w-100" *ngIf="!editing">
+					<mat-form-field class="w-100" *ngIf="editing">
 						<input matInput [ngModel]="service.secret" placeholder="Secreto" disabled>
 					</mat-form-field>
 					<div class="row justify-content-between mt-5">
