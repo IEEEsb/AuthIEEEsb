@@ -7,10 +7,10 @@
 		</div>
 		<p class="h2 text-center mb-5 ">Iniciar Sesión</p>
 		<mat-form-field class="w-100">
-			<input matInput [ngModel]="alias" placeholder="Alias">
+			<input matInput [(ngModel)]="alias" placeholder="Alias">
 		</mat-form-field>
 		<mat-form-field class="w-100">
-			<input matInput [ngModel]="password" type="password" placeholder="Contraseña">
+			<input matInput [(ngModel)]="password" type="password" placeholder="Contraseña">
 		</mat-form-field>
 		<ieeesb-button (click)="login()" label="Iniciar Sesión"></ieeesb-button>
 		<p class="error my-3" *ngIf="error">{{error}}</p>
