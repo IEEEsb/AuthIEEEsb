@@ -14,6 +14,10 @@ const config = require('../../../config.json');
 export class AdminComponent implements OnInit {
 
 	menuItems = {
+		logo: {
+			type: 'router',
+			link: '/',
+		},
 		left: [
 			{
 				text: 'Usuarios',

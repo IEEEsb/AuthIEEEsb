@@ -14,6 +14,10 @@ const config = require('../../../config.json');
 export class MainComponent implements OnInit {
 
 	menuItems = {
+		logo: {
+			type: 'link',
+			link: 'https://ieeesb.es',
+		},
 		left: [
 			{
 				text: 'Servicios',
@@ -51,7 +55,7 @@ export class MainComponent implements OnInit {
 
 	user;
 	activeLink = '';
-	
+
 	constructor(private userService: UserService, private router: Router, private location: Location) {
 		this.router.events.subscribe((val) => {
 			this.activeLink = this.location.path() === '' ? '/' : this.location.path();
