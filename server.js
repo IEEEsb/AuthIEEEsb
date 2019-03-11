@@ -54,7 +54,10 @@ mongoose.connect(config.mongo.serverUrl, {
 		secret: config.store.secret,
 		store: new MongoStore({ mongooseConnection: mongoose.connection }),
 		resave: false,
-		cookie: { secure: 'auto' },
+		cookie: {
+			secure: 'auto',
+			maxAge: 20 * 365 * 24 * 60 * 60 * 1000,
+		},
 		saveUninitialized: false,
 	}));
 	// Static Angular distributables
