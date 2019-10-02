@@ -58,17 +58,9 @@ module.exports.grantPermission = async (req, res, next) => {
 		const service = await Service.findOne(query);
 		if (!service) throw new InvalidServiceError();
 
-		const session = await mongoose.startSession();
-		session.startTransaction();
-
-		await User.updateOne({ _id: req.session.userId }, { $pull: { services: { 'services.id': req.params.serviceId } } }).session(session);
-		const result = await User.updateOne({ _id: req.session.userId }, { $push: { services: { id: req.params.serviceId, scope: req.body.scope } } }).session(session);
-		if (result.nModified === 0) {
-			session.abortTransaction();
-			throw new InternalError();
-		}
-
-		await session.commitTransaction();
+		await User.updateOne({ _id: req.session.userId }, { $pull: { services: { 'services.id': req.params.serviceId } } });
+		const result = await User.updateOne({ _id: req.session.userId }, { $push: { services: { id: req.params.serviceId, scope: req.body.scope } } });
+		if (result.nModified === 0) throw new InternalError();
 
 		const token = await Token.create({ user: req.session.userId, service: service._id });
 
