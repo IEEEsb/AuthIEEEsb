@@ -7,7 +7,7 @@ const Token = require('../models/Token');
 // eslint-disable-next-line import/no-unresolved
 const { pwdIterations } = require('../config.json');
 const {
-	AuthenticationRequiredError, CredentialsError, InvalidSessionError, InvalidPermissionsError, WrongPropertiesError, UnknownObjectError,
+	AuthenticationRequiredError, CredentialsError, InvalidSessionError, InvalidPermissionsError, UnknownObjectError,
 } = require('../common/errors');
 
 
@@ -161,7 +161,7 @@ module.exports.getUserWithScope = async (req, res, next) => {
 
 module.exports.getAllUsers = async (req, res, next) => {
 	try {
-		const users = await User.find({ }, '_id name alias email ieee services enabled roles');
+		const users = await User.find({}, '_id name alias email ieee services enabled roles');
 
 		return res.status(200).json({ users });
 	} catch (e) {

@@ -9,7 +9,7 @@
 					<mat-form-field class="w-100">
 						<input matInput [(ngModel)]="service.name" placeholder="Nombre">
 					</mat-form-field>
-					<ieeesb-tags [(item)]="service.scope" [tags]="['name', 'alias', 'email', 'ieee']" label="Scope"></ieeesb-tags>
+					<ieeesb-tags [(item)]="service.scope" [tags]="['name', 'alias', 'email', 'ieee', 'roles']" label="Scope"></ieeesb-tags>
 					<mat-form-field class="w-100" *ngIf="editing">
 						<input matInput [ngModel]="service._id" placeholder="Id" disabled>
 					</mat-form-field>
